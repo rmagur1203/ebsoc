@@ -1,6 +1,36 @@
 {
-    "host": "ebsoc.co.kr",
-    "login": {
-        "login": "/auth_domain/auth/api/v1/login"
+    "host": "sel2.ebsoc.co.kr",
+    "auth": {
+        "host": "ebsoc.co.kr",
+        "login": "/auth_domain/auth/api/v1/login",
+        "checkCertifiedTeacher": "/auth_domain/auth/api/v1/member/checkCertifiedTeacher"
+    },
+    "common": {
+        "member": "/common_domain/common/api/v1/member",
+        "noticeCommonMainList": "/common_domain/common/api/v1/noticeCommonMainList",
+        "noticeSchoolMainList": "/common_domain/common/api/v1/noticeSchoolMainList"
+    },
+    "cls": {
+        "mypage": {
+            "myClassListByTabType": "/common_domain/cls/api/v1/mypage/myClassListByTabType"
+        },
+        "cmyNote": {
+            "receiptNotOpenCount": "/common_domain/cls/api/v1/cmyNote/receiptNotOpenCount"
+        },
+        "communityChattingRoom": {
+            "communityMyChattingParticipationListCnt": "/common_domain/cls/api/v1/communityChattingRoom/communityMyChattingParticipationListCnt"
+        }
+    },
+    "lecture": {
+        "schedule": {
+            "student": {
+                "list": "/common_domain/lecture/api/v1/schedule/student/list"
+            }
+        },
+        "st": {
+            "lesson": {
+                "list": "/common_domain/lecture/api/v1/st/lesson/list"
+            }
+        }
     }
 }
