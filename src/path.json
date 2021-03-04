@@ -33,6 +33,9 @@
                 "list": "/common_domain/lecture/api/v1/schedule/student/list"
             }
         },
+        "student": {
+            "learning": "/common_domain/lecture/api/v1/student/learning"
+        },
         "st": {
             "lesson": {
                 "list": "/common_domain/lecture/api/v1/st/lesson/list"
