@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/kdhkr/ebsoc-lib#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "typescript": "^4.2.2"
   }
 }
