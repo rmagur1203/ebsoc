@@ -1,5 +1,5 @@
 {
-  "name": "ebsoc-lib",
+  "name": "ebsoc",
   "version": "1.0.0",
   "description": "An EBS Online Class Library for doing cool stuffs.",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kdhkr/ebsoc-lib.git"
+    "url": "git+https://github.com/kdhkr/ebsoc.git"
   },
   "keywords": [
     "EBS",
@@ -20,9 +20,9 @@
   "author": "kdhkr, rmagur1203",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/kdhkr/ebsoc-lib/issues"
+    "url": "https://github.com/kdhkr/ebsoc/issues"
   },
-  "homepage": "https://github.com/kdhkr/ebsoc-lib#readme",
+  "homepage": "https://github.com/kdhkr/ebsoc#readme",
   "dependencies": {
     "axios": "^0.21.1",
     "typescript": "^4.2.2"
