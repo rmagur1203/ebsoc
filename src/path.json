@@ -8,7 +8,10 @@
     "common": {
         "member": "/common_domain/common/api/v1/member",
         "noticeCommonMainList": "/common_domain/common/api/v1/noticeCommonMainList",
-        "noticeSchoolMainList": "/common_domain/common/api/v1/noticeSchoolMainList"
+        "noticeSchoolMainList": "/common_domain/common/api/v1/noticeSchoolMainList",
+        "school": {
+            "info": "/common_domain/common/api/v1/school/info/${schoolCode}"
+        }
     },
     "cls": {
         "mypage": {
@@ -19,6 +22,9 @@
         },
         "communityChattingRoom": {
             "communityMyChattingParticipationListCnt": "/common_domain/cls/api/v1/communityChattingRoom/communityMyChattingParticipationListCnt"
+        },
+        "school": {
+            "schoolClassList": "/common_domain/cls/api/v1/school/schoolClassList"
         }
     },
     "lecture": {
