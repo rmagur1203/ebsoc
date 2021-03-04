@@ -1,0 +1,6 @@
+{
+    "host": "ebsoc.co.kr",
+    "login": {
+        "login": "/auth_domain/auth/api/v1/login"
+    }
+}
