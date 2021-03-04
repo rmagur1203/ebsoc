@@ -4,7 +4,8 @@
   "description": "An EBS Online Class Library for doing cool stuffs.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/kdhkr/ebsoc-lib/issues"
   },
-  "homepage": "https://github.com/kdhkr/ebsoc-lib#readme"
+  "homepage": "https://github.com/kdhkr/ebsoc-lib#readme",
+  "dependencies": {
+    "typescript": "^4.2.2"
+  }
 }
