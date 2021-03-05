@@ -41,8 +41,8 @@ export async function noticeSchoolMainList(token: string) {
     return req.data;
 }
 
-export async function lessonDetail(token: string, lessonSeq: string) {
-    let url: string = "https://" + path.host + path.common.lecture.detail.lesson.replace('${lessonSeq}', lessonSeq);
+export async function lessonDetail(token: string, lessonSeq: number) {
+    let url: string = "https://" + path.host + path.common.lecture.detail.lesson.replace('${lessonSeq}', lessonSeq.toString());
     let req = await axios({
         method: 'GET',
         url: url,
@@ -51,6 +51,7 @@ export async function lessonDetail(token: string, lessonSeq: string) {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
         }
     });
+    return req.data;
 }
 
 export let school = {

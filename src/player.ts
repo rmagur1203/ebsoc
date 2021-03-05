@@ -1,4 +1,3 @@
-import Url from 'url';
 import CryptoJS from 'crypto-js';
 
 import { student } from './lecture';
@@ -6,9 +5,10 @@ import { lessonDetail } from './common';
 
 import Path from './path.json';
 
-export const progressIntervalInSeconds = 30;
-
 export let currentDuration = 0;
+
+const progressIntervalInSeconds = 30;
+export { progressIntervalInSeconds };
 
 const key = CryptoJS.enc.Latin1.parse('l40jsfljasln32uf');
 const iv = CryptoJS.enc.Latin1.parse('asjfknal3bafjl23');
@@ -42,19 +42,19 @@ export function makeRate(current: number, duration: number) {
     return Math.min(rate, 100);
 }
 
-export function getTotalDuration(token: string, lessonSeq: number) {
-    const response = lessonDetail(token, lessonSeq);
-    return response.data.lectureContentsDto.lectureContentsMvpDto.playTime;
+export async function getTotalDuration(token: string, lessonSeq: number) {
+    const data = await lessonDetail(token, lessonSeq);
+    return data.lectureContentsDto.lectureContentsMvpDto.playTime;
 }
 
-export function getCurrentDuration(token: string, { video: string, playTime: number }) {
-    const path = Url.parse(video).pathname.split("/");
-    const data = student.lectureAttendList(token, { path[2], path[4] });
-    const lectureSeq = parseInt(path[6]);
-
+export async function getCurrentDuration(token: string, body: { video: string, playTime: number }) {
+    const path = body.video.split("/");
+    const classSqno = parseInt(path[6]);
+    const data = await student.lectureAttendList(token, { classUrlPath: path[4], classSqno: classSqno });
+    let current: number = 0;
     for (let i = 0; i < data.list.length; i++) {
-        if (data.list[i] == lectureSeq) {
-            const current = data.list[i].rtpgsRt;
+        if (data.list[i] == classSqno) {
+            current = data.list[i].rtpgsRt;
             break;
         }
     }
@@ -63,11 +63,15 @@ export function getCurrentDuration(token: string, { video: string, playTime: num
     console.log(`[DEBUG] current: ${current} `);
      */
 
-    return playTime * current;
+    return body.playTime * current;
 }
 
-export function intervalCallback(fields: object) {
-    callApi(fields.token, { fields.data.memberSeq, fields.data.lctreLrnSqno, makeRate(currentDuration, fields.data.playTime) });
+export function intervalCallback(token: string, data: { memberSeq: number, lctreLrnSqno: number, currentDuration: number, playTime: number }) {
+    callApi(token, {
+        memberSeq: data.memberSeq,
+        lctreLrnSqno: data.lctreLrnSqno,
+        rate: makeRate(data.currentDuration, data.playTime)
+    });
     currentDuration += progressIntervalInSeconds;
 
     /* Use this when debugging
@@ -77,23 +81,26 @@ export function intervalCallback(fields: object) {
 
 export default class Player {
     constructor(options: { token: string, memberSeq: number, lctreLrnSqno: number, lessonSeq: number, video: string }) {
-        const playTime = getTotalDuration(token, lessonSeq);
+        (async () => {
+            const playTime = await getTotalDuration(options.token, options.lessonSeq);
 
-        this.fields = {
-            'token': token,
-            'data': {
-                'memberSeq': memberSeq,
-                'lctreLrnSqno': lctreLrnSqno,
-                'lessonSeq': lessonSeq,
-                'video': video,
-                'playTime': playTime
-            }
-        };
-        currentDuration = getCurrentDuration(token, { video, playTime });
+            this.fields = {
+                token: options.token,
+                data: {
+                    memberSeq: options.memberSeq,
+                    lctreLrnSqno: options.lctreLrnSqno,
+                    lessonSeq: options.lessonSeq,
+                    video: options.video,
+                    playTime: playTime
+                }
+            };
+
+            currentDuration = await getCurrentDuration(options.token, { video: options.video, playTime: playTime })
+        })();
     }
     play() {
         if (Number.isNaN(this.timer)) {
-            this.timer = setInterval(intervalCallback(this.fields), progressIntervalInSeconds * 1000);
+            this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, this.fields);
             this.clearIntvl = setTimeout(this.stop, this.fields.data.playTime * 1000);
         }
     }
@@ -107,5 +114,18 @@ export default class Player {
         clearInterval(this.timer);
         clearInterval(this.clearIntvl);
     }
-    timer = NaN;
+    timer: number = NaN;
+    fields: {
+        token: string,
+        data: {
+            memberSeq: number,
+            lctreLrnSqno: number,
+            lessonSeq: number,
+            video: string,
+            playTime: number
+        }
+    } = {
+        token: "", data: { memberSeq: NaN, lctreLrnSqno: NaN, lessonSeq: NaN, video: "", playTime: NaN }
+        };
+    clearIntvl: number = NaN;
 }

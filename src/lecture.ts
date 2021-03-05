@@ -49,8 +49,8 @@ export let student = {
     },
     lectureAttendList: async function (token: string, data: { classUrlPath: string, classSqno: number }) {
         let url: string = "https://" + path.host + path.lecture.lesson.lecture.attend.list
-            .replace('${lectureLearningSeq}', data.classUrlPath);
-            .replace('${classSqno}', data.classSqno);
+            .replace('${lectureLearningSeq}', data.classUrlPath)
+            .replace('${classSqno}', data.classSqno.toString());
         let req = await axios({
             method: 'POST',
             url: url,
