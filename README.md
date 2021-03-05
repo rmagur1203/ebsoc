@@ -11,6 +11,8 @@ An easy-to-use EBS Online Class Library for doing cool stuffs.
 # Technologies used
 - [Typescript](https://typescriptlang.org/)
 - [axios](https://www.npmjs.com/package/axios)
+- [node-cron](https://www.npmjs.com/package/node-cron)
+- [crypto-js](https://www.npmjs.com/package/crypto-js)
 - And more...
 
 # Contributors
