@@ -2,10 +2,30 @@ import CryptoJS from 'crypto-js';
 import { student } from './lecture';
 import Path from './path.json';
 
+const interval_sec = 30;
+const interval_callback = () => {
+
+}
+const complete_callback = () => {
+
+}
+const pause_callback = () => {
+
+}
+export { interval_sec, interval_callback, complete_callback, pause_callback };
+
 export default class Player {
-    constructor() {
+    constructor(options: {token: string, memberSeq: number, lctreLrnSqno: number, video: string}) {
 
     }
+    play() {
+        if (Number.isNaN(this.timer))
+            this.timer = setInterval(interval_callback, interval_sec * 1000);
+    }
+    stop() {
+        clearInterval(this.timer);
+    }
+    timer = NaN;
 }
 
 const key = CryptoJS.enc.Latin1.parse('l40jsfljasln32uf');
