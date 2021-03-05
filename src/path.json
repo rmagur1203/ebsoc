@@ -25,7 +25,12 @@
         },
         "school": {
             "schoolClassList": "/common_domain/cls/api/v1/school/schoolClassList"
-        }
+        },
+        "lctClass": {
+            "detail": "/common_domain/cls/api/v1/lctClass/detail",
+            "class": "/common_domain/cls/api/v1/lctClass/${classSqno}"
+        },
+        "communityBoardNoticeMainList": "/common_domain/cls/api/v1/communityBoardNoticeMainList"
     },
     "lecture": {
         "schedule": {
@@ -34,7 +39,8 @@
             }
         },
         "student": {
-            "learning": "/common_domain/lecture/api/v1/student/learning"
+            "learning": "/common_domain/lecture/api/v1/student/learning",
+            "learningProgress": "/lecture/api/v1/student/learning/${lectureLearningSeq}/progress"
         },
         "st": {
             "lesson": {

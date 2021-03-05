@@ -63,3 +63,52 @@ export let school = {
         return req.data;
     }
 };
+
+export let lctClass = {
+    detail: async function (token: string, data: { classUrlPath: string }) {
+        let url: string = "https://" + path.host + path.cls.lctClass.detail;
+        let req = await axios({
+            method: 'POST',
+            url: url,
+            headers: {
+                "X-AUTH-TOKEN": token,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+            },
+            data: data
+        });
+        return req.data;
+    },
+    classSqno: async function (token: string, classSqno: number, data: { schoolCode: string }){
+        let url: string = "https://" + path.host + path.cls.lctClass.class.replace('${classSqno}', classSqno.toString());
+        let req = await axios({
+            method: 'POST',
+            url: url,
+            headers: {
+                "X-AUTH-TOKEN": token,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+            },
+            data: data
+        });
+        return req.data;
+    }
+}
+
+export let classMenu = {
+    menuList: async function (token: string, data: {classSqno:number}) {
+        
+    }
+}
+
+export async function communityBoardNoticeMainList(token: string, data: { classUrlPath: string }) {
+    let url: string = "https://" + path.host + path.cls.communityBoardNoticeMainList;
+    let req = await axios({
+        method: 'POST',
+        url: url,
+        headers: {
+            "X-AUTH-TOKEN": token,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+        },
+        data: data
+    });
+    return req.data;
+}

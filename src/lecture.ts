@@ -31,5 +31,20 @@ export let student = {
             }
         });
         return req.data;
+    },
+    learningProgress: async function (token: string, lectureLearningSeq: number, data: { encriptedProgressRate: string }) {
+        ///common_domain/lecture/api/v1/sunrinkorean1/lesson/lecture/attend/list/1903 => lectureLearningSeq
+        let url: string = "https://" + path.host + path.lecture.student.learningProgress
+            .replace('${lectureLearningSeq}', lectureLearningSeq.toString());
+        let req = await axios({
+            method: 'POST',
+            url: url,
+            headers: {
+                "X-AUTH-TOKEN": token,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+            },
+            data: data
+        });
+        return req.data;
     }
 }
