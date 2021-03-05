@@ -48,7 +48,8 @@ export function getTotalDuration(token: string, lessonSeq: number) {
 }
 
 export function getCurrentDuration(token: string, { video: string, playTime: number }) {
-    const path = Url.parse(video).pathname.split("/");
+    const videoUrl = new Url(video);
+    const path = videoUrl.pathname.split("/");
     const data = student.lectureAttendList(token, { path[2], path[4] });
     const lectureSeq = parseInt(path[6]);
 
