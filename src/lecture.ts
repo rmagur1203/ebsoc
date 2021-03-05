@@ -46,5 +46,19 @@ export let student = {
             data: data
         });
         return req.data;
-    }
+    },
+    lectureAttendList: async function (token: string, data: { classUrlPath: string, classSqno: number }) {
+        let url: string = "https://" + path.host + path.lecture.lesson.lecture.attend.list
+            .replace('${lectureLearningSeq}', data.classUrlPath);
+            .replace('${classSqno}', data.classSqno);
+        let req = await axios({
+            method: 'POST',
+            url: url,
+            headers: {
+                "X-AUTH-TOKEN": token,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+            }
+        });
+        return req.data;
+    },
 }
