@@ -21,8 +21,11 @@ export function encrypt(memberSeq: number, lctreLrnSqno: number, progressRate: n
         data,
         key,
         {
-            iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.ZeroPadding
-        });
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.ZeroPadding
+        }
+    );
     //console.log('encrypted: ' + encrypted);
     //var decrypted = CryptoJS.AES.decrypt(encrypted, key, { iv: iv, padding: CryptoJS.pad.ZeroPadding });
     //console.log('decrypted: '+decrypted.toString(CryptoJS.enc.Utf8));
@@ -47,8 +50,8 @@ export async function getTotalDuration(token: string, lessonSeq: number) {
     return data.lectureContentsDto.lectureContentsMvpDto.playTime;
 }
 
-export async function getCurrentDuration(token: string, body: { video: string, playTime: number }) {
-    const path = body.video.split("/");
+export async function getCurrentDuration(token: string, video: { url: string, duration: number }) {
+    const path = video.url.split("/");
     const classSqno = parseInt(path[6]);
     const data = await student.lectureAttendList(token, { classUrlPath: path[4], classSqno: classSqno });
     let current: number = 0;
@@ -63,7 +66,7 @@ export async function getCurrentDuration(token: string, body: { video: string, p
     console.log(`[DEBUG] current: ${current} `);
      */
 
-    return body.playTime * current;
+    return video.duration * current;
 }
 
 export function intervalCallback(token: string, data: { memberSeq: number, lctreLrnSqno: number, currentDuration: number, playTime: number }) {
@@ -80,28 +83,44 @@ export function intervalCallback(token: string, data: { memberSeq: number, lctre
 }
 
 export default class Player {
-    constructor(options: { token: string, memberSeq: number, lctreLrnSqno: number, lessonSeq: number, video: string }) {
-        (async () => {
-            const playTime = await getTotalDuration(options.token, options.lessonSeq);
-
-            this.fields = {
-                token: options.token,
-                data: {
-                    memberSeq: options.memberSeq,
-                    lctreLrnSqno: options.lctreLrnSqno,
-                    lessonSeq: options.lessonSeq,
-                    video: options.video,
-                    playTime: playTime
-                }
-            };
-
-            currentDuration = await getCurrentDuration(options.token, { video: options.video, playTime: playTime })
-        })();
+    timer: number = NaN;
+    fields: {
+        token: string,
+        data: {
+            memberSeq: number,
+            lctreLrnSqno: number,
+            lessonSeq: number
+        },
+        video: {
+            url: string,
+            duration: number
+        }
+    };
+    clearIntvl: number = NaN;
+    constructor(token: string, options: { memberSeq: number, lctreLrnSqno: number, lessonSeq: number, videoUrl: string }) {
+        this.fields = {
+            token: token,
+            data: {
+                memberSeq: options.memberSeq,
+                lctreLrnSqno: options.lctreLrnSqno,
+                lessonSeq: options.lessonSeq
+            },
+            video: {
+                url: options.videoUrl,
+                duration: NaN
+            }
+        };
+        this.getDuration(token, options.lessonSeq);
+    }
+    async getDuration(token: string, lessonSeq: number) {
+        const duration = await getTotalDuration(token, lessonSeq);
+        this.fields.video.duration = duration;
+        currentDuration = await getCurrentDuration(token, duration);
     }
     play() {
         if (Number.isNaN(this.timer)) {
             this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, this.fields);
-            this.clearIntvl = setTimeout(this.stop, this.fields.data.playTime * 1000);
+            this.clearIntvl = setTimeout(this.stop, this.fields.video.duration * 1000);
         }
     }
     pause() {
@@ -114,18 +133,4 @@ export default class Player {
         clearInterval(this.timer);
         clearInterval(this.clearIntvl);
     }
-    timer: number = NaN;
-    fields: {
-        token: string,
-        data: {
-            memberSeq: number,
-            lctreLrnSqno: number,
-            lessonSeq: number,
-            video: string,
-            playTime: number
-        }
-    } = {
-        token: "", data: { memberSeq: NaN, lctreLrnSqno: NaN, lessonSeq: NaN, video: "", playTime: NaN }
-        };
-    clearIntvl: number = NaN;
 }
