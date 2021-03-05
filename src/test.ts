@@ -1,4 +1,17 @@
 import { login } from "./auth";
-import { encrypt } from "./player";
+import { mypage } from "./cls";
+import { member } from "./common";
+import Player, { encrypt } from "./player";
 
-encrypt(6915982, 4860, 32);
+(async () => {
+    let data = await login("rmagur12032", "password");
+    let token: string = data.data.token;
+    data = await member(token);
+    /*
+    let player = new Player({
+        token: token,
+        memberSeq: 
+    });
+    */
+    encrypt(6915982, 4860, 32);
+})();

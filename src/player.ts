@@ -42,7 +42,7 @@ export function encrypt(memberSeq: number, lctreLrnSqno: number, progressRate: n
         {
             iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.ZeroPadding
         });
-    console.log('encrypted: ' + encrypted);
+    //console.log('encrypted: ' + encrypted);
     //var decrypted = CryptoJS.AES.decrypt(encrypted, key, { iv: iv, padding: CryptoJS.pad.ZeroPadding });
     //console.log('decrypted: '+decrypted.toString(CryptoJS.enc.Utf8));
 
