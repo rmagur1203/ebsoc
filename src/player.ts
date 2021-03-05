@@ -1,14 +1,11 @@
-import Url from 'url';
 import CryptoJS from 'crypto-js';
 
 import { student } from './lecture';
 import { lessonDetail } from './common';
 
-import Path from './path.json';
+export const progressIntervalInSeconds: number = 30;
 
-export const progressIntervalInSeconds = 30;
-
-export let currentDuration = 0;
+export let currentDuration: number = 0;
 
 const key = CryptoJS.enc.Latin1.parse('l40jsfljasln32uf');
 const iv = CryptoJS.enc.Latin1.parse('asjfknal3bafjl23');
@@ -31,8 +28,8 @@ export function encrypt(memberSeq: number, lctreLrnSqno: number, progressRate: n
     // return decrypted;
 }
 
-export function callApi(token: string, data: { memberSeq: number, lctreLrnSqno: number, rate: number }) {
-    let encriptedProgressRate = encrypt(data.memberSeq, data.lctreLrnSqno, data.rate);
+export function callApi(token: string, rate: number, data: { memberSeq: number, lctreLrnSqno: number }) {
+    let encriptedProgressRate = encrypt(data.memberSeq, data.lctreLrnSqno, rate);
     student.learningProgress(token, data.lctreLrnSqno, { encriptedProgressRate });
 }
 
@@ -43,19 +40,22 @@ export function makeRate(current: number, duration: number) {
 }
 
 export function getTotalDuration(token: string, lessonSeq: number) {
-    const response = lessonDetail(token, lessonSeq);
+    const response = lessonDetail(token, lessonSeq.toString());
     return response.data.lectureContentsDto.lectureContentsMvpDto.playTime;
 }
 
-export function getCurrentDuration(token: string, { video: string, playTime: number }) {
-    const videoUrl = new Url(video);
-    const path = videoUrl.pathname.split("/");
-    const data = student.lectureAttendList(token, { path[2], path[4] });
-    const lectureSeq = parseInt(path[6]);
+export function getCurrentDuration(token: string, video: string, body: { playTime: number }) {
+    const path = video.split("/");
+    const classSqno = path[6];
+
+    const data = student.lectureAttendList(token, path[4], { classSqno });
+    const lectureSeq = parseInt(classSqno);
+
+    let current: number = 0;
 
     for (let i = 0; i < data.list.length; i++) {
         if (data.list[i] == lectureSeq) {
-            const current = data.list[i].rtpgsRt;
+            current = data.list[i].rtpgsRt;
             break;
         }
     }
@@ -64,11 +64,13 @@ export function getCurrentDuration(token: string, { video: string, playTime: num
     console.log(`[DEBUG] current: ${current} `);
      */
 
-    return playTime * current;
+    return body.playTime * current;
 }
 
-export function intervalCallback(fields: object) {
-    callApi(fields.token, { fields.data.memberSeq, fields.data.lctreLrnSqno, makeRate(currentDuration, fields.data.playTime) });
+export function intervalCallback(token: string, memberSeq: number, lctreLrnSqno: number, playTime: number) {
+    const res: number = makeRate(currentDuration, playTime);
+
+    callApi(token, res, { memberSeq, lctreLrnSqno });
     currentDuration += progressIntervalInSeconds;
 
     /* Use this when debugging
@@ -78,24 +80,22 @@ export function intervalCallback(fields: object) {
 
 export default class Player {
     constructor(options: { token: string, memberSeq: number, lctreLrnSqno: number, lessonSeq: number, video: string }) {
-        const playTime = getTotalDuration(token, lessonSeq);
+        const playTime = getTotalDuration(options.token, options.lessonSeq);
 
-        this.fields = {
-            'token': token,
-            'data': {
-                'memberSeq': memberSeq,
-                'lctreLrnSqno': lctreLrnSqno,
-                'lessonSeq': lessonSeq,
-                'video': video,
-                'playTime': playTime
-            }
-        };
-        currentDuration = getCurrentDuration(token, { video, playTime });
+        this.token = options.token;
+        this.memberSeq = options.memberSeq;
+        this.lctreLrnSqno = options.lctreLrnSqno;
+        this.lessonSeq = options.lessonSeq;
+        this.video = options.video;
+        this.playTime = playTime;
+        
+        currentDuration = getCurrentDuration(options.token, options.video, { playTime });
     }
     play() {
         if (Number.isNaN(this.timer)) {
-            this.timer = setInterval(intervalCallback(this.fields), progressIntervalInSeconds * 1000);
-            this.clearIntvl = setTimeout(this.stop, this.fields.data.playTime * 1000);
+            
+            this.timer = setInterval("intervalCallback(this.token, this.memberSeq, this.lctreLrnSqno, this.playTime)", progressIntervalInSeconds * 1000);
+            this.clearIntvl = setTimeout(this.stop, this.playTime * 1000);
         }
     }
     pause() {
@@ -109,4 +109,11 @@ export default class Player {
         clearInterval(this.clearIntvl);
     }
     timer = NaN;
+    clearIntvl = NaN;
+    token: string;
+    memberSeq: number;
+    lctreLrnSqno: number;
+    lessonSeq: number;
+    video: string;
+    playTime: number;
 }
