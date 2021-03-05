@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js';
+
 import { student } from './lecture';
 import Path from './path.json';
 
