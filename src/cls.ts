@@ -95,7 +95,7 @@ export let lctClass = {
 
 export let classMenu = {
     menuList: async function (token: string, data: {classSqno:number}) {
-        
+
     }
 }
 
