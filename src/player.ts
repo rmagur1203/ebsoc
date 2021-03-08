@@ -1,31 +1,44 @@
 import CryptoJS from 'crypto-js';
 
-import { student } from './lecture';
-import { lessonDetail } from './common';
+import { $classUrlPath, lesson, student } from './lecture';
+import { lecture } from './common';
 
 import Path from './path.json';
 
-const progressIntervalInSeconds = 30;
+const progressIntervalInSeconds = 5;//30;
 export { progressIntervalInSeconds };
 
 const key = CryptoJS.enc.Latin1.parse('l40jsfljasln32uf');
 const iv = CryptoJS.enc.Latin1.parse('asjfknal3bafjl23');
 export { key, iv };
 
-type fieldType = {
+//#region type
+type FieldType = {
     token: string,
     data: {
         memberSeq: number,
         lctreLrnSqno: number,
-        lessonSeq: number
+        lessonSeq: number,
+        subLessonSeq: number
     },
     video: {
         url: string,
         duration: number
     },
-    current: number
+    current: Date
 };
+type CallbackData = {
+    token: string,
+    data: {
+        memberSeq: number,
+        lctreLrnSqno: number,
+        startTime: Date,
+        playTime: number
+    }
+}
+//#endregion type
 
+//#region basicfunctions
 export function encrypt(memberSeq: number, lctreLrnSqno: number, progressRate: number) {
     var data = `${memberSeq}|${lctreLrnSqno}|${progressRate}`;
 
@@ -48,7 +61,7 @@ export function encrypt(memberSeq: number, lctreLrnSqno: number, progressRate: n
 
 export function callApi(token: string, data: { memberSeq: number, lctreLrnSqno: number, rate: number }) {
     let encriptedProgressRate = encrypt(data.memberSeq, data.lctreLrnSqno, data.rate);
-    student.learningProgress(token, data.lctreLrnSqno, { encriptedProgressRate });
+    return student.learningProgress(token, data.lctreLrnSqno, { encriptedProgressRate });
 }
 
 export function makeRate(current: number, duration: number) {
@@ -57,86 +70,120 @@ export function makeRate(current: number, duration: number) {
     return Math.min(rate, 100);
 }
 
-export async function getTotalDuration(token: string, lessonSeq: number) {
-    const data = await lessonDetail(token, lessonSeq);
-    return data.lectureContentsDto.lectureContentsMvpDto.playTime;
+export async function lessonList(token: string, path: { classUrlPath: string, lessonSeq: number }) {
+    const res = await $classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, path);
+    const list: Array<any> = res.data.list;
+    return list;
+}
+//#endregion basicfunctions
+//#region mvpfunctions
+export async function mvpDto(token: string, path: { subLessonSeq: number }) {
+    const learning = await lecture.detail.lesson.$subLessonSeq(token, path);
+    return learning.data.lectureContentsDto.lectureContentsMvpDto;
 }
 
-export async function getCurrentDuration(token: string, video: { url: string, duration: number }) {
-    const path = video.url.split("/");
-    const classSqno = parseInt(path[6]);
-    const data = await student.lectureAttendList(token, { classUrlPath: path[4], classSqno: classSqno });
-    let current: number = 0;
-    for (let i = 0; i < data.list.length; i++) {
-        if (data.list[i] == classSqno) {
-            current = data.list[i].rtpgsRt;
-            break;
-        }
-    }
-
-    /* Use this when debugging
-    console.log(`[DEBUG] current: ${current} `);
-     */
-
-    return video.duration * current;
+export async function mvpFileUrlPath(token: string, path: { subLessonSeq: number }) {
+    const Dto = await mvpDto(token, path);
+    return Dto.mvpFileUrlPath;
 }
 
-export function intervalCallback(field: fieldType) {
-    callApi(field.token, {
-        memberSeq: field.data.memberSeq,
-        lctreLrnSqno: field.data.lctreLrnSqno,
-        rate: makeRate(field.current, field.video.duration)
+export async function mvpPlayTime(token: string, path: { subLessonSeq: number }) {
+    const Dto = await mvpDto(token, path);
+    return Dto.playTime;
+}
+
+export async function mvpCurrentPercent(token: string, path: { classUrlPath: string, lessonSeq: number }, search: { subLessonSeq: number }) {
+    const res = await $classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, path);
+    const list: Array<any> = res.data.list;
+    const first = list.find(x => x.lessonSeq == search.subLessonSeq);
+    return first.rtpgsRt / 100;
+}
+//#endregion mvpfuncitons
+//#region callbacks
+const intervalCallback = async (data: CallbackData) => {
+    let sec = (new Date().getTime() - data.data.startTime.getTime()) / 1000;
+    let rate = Math.floor(makeRate(sec, data.data.playTime));
+    let res = await callApi(data.token, {
+        memberSeq: data.data.memberSeq,
+        lctreLrnSqno: data.data.lctreLrnSqno,
+        rate: rate
     });
-    field.current += progressIntervalInSeconds;
-
-    /* Use this when debugging
-     * console.log(`[DEBUG] currentDuration: ${currentDuration}`);
-     */
+    console.log(sec, rate, res);
 }
-
-export function pauseCallback(field: fieldType) {
-
-}
+//#endregion callbacks
 
 export default class Player {
-    timer: number = NaN;
-    fields: fieldType;
+    timer: number = -1;
+    fields: FieldType;
     clearIntvl: number = NaN;
-    constructor(token: string, options: { memberSeq: number, lctreLrnSqno: number, lessonSeq: number, videoUrl: string }) {
+    constructor(token: string, options: {
+        memberSeq: number,
+        lctreLrnSqno: number,
+        lessonSeq: number,
+        subLessonSeq: number
+    }) {
         this.fields = {
             token: token,
             data: {
                 memberSeq: options.memberSeq,
                 lctreLrnSqno: options.lctreLrnSqno,
-                lessonSeq: options.lessonSeq
+                lessonSeq: options.lessonSeq,
+                subLessonSeq: options.subLessonSeq
             },
             video: {
-                url: options.videoUrl,
+                url: "",
                 duration: NaN
             },
-            current: 0
+            current: new Date()
         };
-        this.getDuration(token, options.lessonSeq);
     }
-    async getDuration(token: string, lessonSeq: number) {
-        const duration = await getTotalDuration(token, lessonSeq);
-        this.fields.video.duration = duration;
-        this.fields.current = await getCurrentDuration(token, duration);
+    async create(token: string, data: {
+        contentsSeq: number
+        contentsTypeCode: string
+        lectureSeq: number
+        lessonAttendanceSeq: number
+        lessonSeq: number
+        officeEduCode: string
+        schoolCode: string
+    }) {
+        await lesson.lecture.attend.create(token, data);
     }
     play() {
-        if (Number.isNaN(this.timer)) {
-            this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, this.fields);
-            this.clearIntvl = setTimeout(this.stop, this.fields.video.duration * 1000);
+        if (this.timer === -1) {
+            (async()=>{
+                const startTime = new Date();
+                const playTime = await mvpPlayTime(this.fields.token, {
+                    subLessonSeq: this.fields.data.subLessonSeq
+                });
+                intervalCallback({
+                    token: this.fields.token,
+                    data: {
+                        memberSeq: this.fields.data.memberSeq,
+                        lctreLrnSqno: this.fields.data.lctreLrnSqno,
+                        startTime: startTime,
+                        playTime: playTime
+                    }
+                });
+                this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
+                    token: this.fields.token,
+                    data: {
+                        memberSeq: this.fields.data.memberSeq,
+                        lctreLrnSqno: this.fields.data.lctreLrnSqno,
+                        startTime: startTime,
+                        playTime: playTime
+                    }
+                });
+            })();
         }
     }
     pause() {
-
+        //미지원
     }
     resume() {
-
+        //미지원
     }
     stop() {
-        clearInterval(this.timer);
-        clearInterval(this.clearIntvl);
+        if (this.timer != -1)
+            clearInterval(this.timer);
     }
 }

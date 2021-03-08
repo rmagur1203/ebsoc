@@ -1,17 +1,53 @@
 import { login } from "./auth";
-import { mypage } from "./cls";
+import { lctClass, mypage } from "./cls";
 import { member } from "./common";
-import Player, { encrypt } from "./player";
+import Player, { callApi, encrypt } from "./player";
+import AxiosDebug from 'axios-debug-log';
+import { $classUrlPath } from "./lecture";
+AxiosDebug({
+    error: function (debug, error) {
+        console.log(error.request.path);
+    }
+});
 
 (async () => {
-    let data = await login("rmagur12032", "password");
-    let token: string = data.data.token;
-    let player = new Player(token, {
-        memberSeq: 6915982,
-        lctreLrnSqno: 4738,
-        lessonSeq: 1933,
-        videoUrl: 'https://sel2.ebsoc.co.kr/class/sunrinkorean1/course/1903/lecture/554904'
+    let member = await login("아이디", "비밀번호");
+    let token: string = member.data.token;
+    let memberSeq: number = member.data.memberInfo.memberSeq;
+    let schoolCode: string = member.data.memberInfo.memberSchoolCode;
+    let classUrlPath = "tongsa1c";
+
+    let clsDetail = await lctClass.detail(token, {
+        classUrlPath: classUrlPath
     });
+    let classSqno: number = clsDetail.data.classSqno;
+
+    clsDetail = await lctClass.classSqno(token, classSqno, { schoolCode: schoolCode });
+
+    let lessons = await $classUrlPath.lesson.list(token, { classUrlPath });
+    let lessonSeq = 1815;
+    
+    let learnings = await $classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, {
+        classUrlPath: classUrlPath,
+        lessonSeq: lessonSeq
+    });
+    let subLessonSeq = 91;
+    let lectureLearningSeq = 7707;
+    
+    /*
+    callApi(token, {
+        memberSeq: memberSeq,
+        lctreLrnSqno: lectureLearningSeq,
+        rate: 2
+    });
+    */
+    let player = new Player(token, {
+        memberSeq: member.data.memberInfo.memberSeq,
+        lctreLrnSqno: lectureLearningSeq,
+        lessonSeq: lessonSeq,
+        subLessonSeq: subLessonSeq
+    });
+    player.play();
     /*
     let player = new Player({
         token: token,

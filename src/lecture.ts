@@ -1,10 +1,11 @@
 import axios from 'axios';
-import path from './path.json';
+import Path from './path.json';
+import './substitute';
 
 export let schedule = {
     student: {
         list: async function (token: string, data: { classDate: string, memberSeq: number }) {
-            let url: string = "https://" + path.host + path.lecture.schedule.student.list;
+            let url: string = "https://" + Path.host + Path.lecture.schedule.student.list;
             let req = await axios({
                 method: 'POST',
                 url: url,
@@ -21,7 +22,7 @@ export let schedule = {
 
 export let student = {
     learning: async function (token: string) {
-        let url: string = "https://" + path.host + path.lecture.student.learning;
+        let url: string = "https://" + Path.host + Path.lecture.student.learning;
         let req = await axios({
             method: 'GET',
             url: url,
@@ -34,7 +35,7 @@ export let student = {
     },
     learningProgress: async function (token: string, lectureLearningSeq: number, data: { encriptedProgressRate: string }) {
         ///common_domain/lecture/api/v1/sunrinkorean1/lesson/lecture/attend/list/1903 => lectureLearningSeq
-        let url: string = "https://" + path.host + path.lecture.student.learningProgress
+        let url: string = "https://" + Path.host + Path.lecture.student.learningProgress
             .replace('${lectureLearningSeq}', lectureLearningSeq.toString());
         let req = await axios({
             method: 'POST',
@@ -46,19 +47,70 @@ export let student = {
             data: data
         });
         return req.data;
-    },
-    lectureAttendList: async function (token: string, data: { classUrlPath: string, classSqno: number }) {
-        let url: string = "https://" + path.host + path.lecture.lesson.lecture.attend.list
-            .replace('${lectureLearningSeq}', data.classUrlPath)
-            .replace('${classSqno}', data.classSqno.toString());
-        let req = await axios({
-            method: 'POST',
-            url: url,
-            headers: {
-                "X-AUTH-TOKEN": token,
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+    }
+}
+
+export let lesson = {
+    lecture: {
+        attend: {
+            create: async function (token: string, data: {
+                contentsSeq: number
+                contentsTypeCode: string
+                lectureSeq: number
+                lessonAttendanceSeq: number
+                lessonSeq: number
+                officeEduCode: string
+                schoolCode: string
+            }) {
+                let url: string = "https://" + Path.host + Path.lecture.lesson.lecture.attend.create;
+                let req = await axios({
+                    method: 'POST',
+                    url: url,
+                    headers: {
+                        "X-AUTH-TOKEN": token,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                    },
+                    data: data
+                });
+                return req.data;
             }
-        });
-        return req.data;
-    },
+        }
+    }
+}
+
+export let $classUrlPath = {
+    lesson: {
+        list: async function (token: string, path: { classUrlPath: string }) {
+            let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.list
+                .substitute(path);
+            let req = await axios({
+                method: 'GET',
+                url: url,
+                headers: {
+                    "X-AUTH-TOKEN": token,
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                }
+            });
+            return req.data;
+        },
+        lecture: {
+            attend: {
+                list: {
+                    $lessonSeq: async function (token: string, path: { classUrlPath: string, lessonSeq: number }) {
+                        let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.lecture.attend.list
+                            .substitute(path);
+                        let req = await axios({
+                            method: 'GET',
+                            url: url,
+                            headers: {
+                                "X-AUTH-TOKEN": token,
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                            }
+                        });
+                        return req.data;
+                    }
+                }
+            }
+        }
+    }
 }

@@ -14,7 +14,9 @@
         },
         "lecture": {
             "detail": {
-                "lesson": "/common_domain/common/api/v1/lecture/detail/lesson/${lessonSeq}"
+                "lesson": {
+                    "$subLessonSeq": "/common_domain/common/api/v1/lecture/detail/lesson/${subLessonSeq}" 
+                }
             }
         }
     },
@@ -55,7 +57,17 @@
         "lesson": {
             "lecture": {
                 "attend": {
-                    "list": "/common_domain/lecture/api/v1/${classUrlPath}/lesson/lecture/attend/list/${classSqno}"
+                    "create": "/common_domain/lecture/api/v1/lesson/lecture/attend/create"
+                }
+            }
+        },
+        "$classUrlPath": {
+            "lesson": {
+                "list": "/common_domain/lecture/api/v1/${classUrlPath}/lesson/list",
+                "lecture": {
+                    "attend": {
+                        "list": "/common_domain/lecture/api/v1/${classUrlPath}/lesson/lecture/attend/list/${lessonSeq}"
+                    }
                 }
             }
         }
