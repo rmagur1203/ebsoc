@@ -1,6 +1,6 @@
 {
   "name": "ebsoc",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "An EBS Online Class Library for doing cool stuffs.",
   "main": "./dist/index.js",
   "scripts": {
