@@ -7,8 +7,11 @@ An easy-to-use EBS Online Class Library for doing cool stuffs.
 [Go to Wiki](https://github.com/kdhkr/ebsoc/wiki/Features) to check out more features.
 
 ## Documention
-### Getting Started
+### Installation
 [Go to Wiki](https://github.com/kdhkr/ebsoc/wiki/Installation) to check out more detailed explanation.
+### Usage
+[Go to Wiki](https://github.com/kdhkr/ebsoc/wiki/Usage) to check out more detailed explanation.
+
 
 ## Technologies used
 - [Typescript](https://typescriptlang.org/)
