@@ -1,4 +1,5 @@
 # ebsoc
+**We are not responsible for any problems caused by using this module. Use at your own risk.**
 An easy-to-use EBS Online Class Library for doing cool stuffs.
 
 ## Features
