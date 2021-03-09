@@ -2,7 +2,7 @@
   "name": "ebsoc",
   "version": "1.0.3",
   "description": "An EBS Online Class Library for doing cool stuffs.",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean"

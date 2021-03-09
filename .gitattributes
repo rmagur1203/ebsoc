@@ -1,0 +1,1 @@
+examples/electron1/dist/win-unpacked/EBSOC-Example-Application.exe filter=lfs diff=lfs merge=lfs -text
