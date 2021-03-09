@@ -1,11 +1,14 @@
+import { getVideoDurationInSeconds as videoDuration } from 'get-video-duration';
+
 import CryptoJS from 'crypto-js';
 
 import { $classUrlPath, lesson, student } from './lecture';
 import { lecture } from './common';
 
 import Path from './path.json';
+import printBox from './printbox';
 
-const progressIntervalInSeconds = 5;//30;
+let progressIntervalInSeconds: number = 5;//30;
 export { progressIntervalInSeconds };
 
 const key = CryptoJS.enc.Latin1.parse('l40jsfljasln32uf');
@@ -89,6 +92,8 @@ export async function mvpFileUrlPath(token: string, path: { subLessonSeq: number
 
 export async function mvpPlayTime(token: string, path: { subLessonSeq: number }) {
     const Dto = await mvpDto(token, path);
+    if (!Dto.playTime)
+        return await videoDuration(Dto.mvpFileUrlPath);
     return Dto.playTime;
 }
 
@@ -108,7 +113,10 @@ const intervalCallback = async (data: CallbackData) => {
         lctreLrnSqno: data.data.lctreLrnSqno,
         rate: rate
     });
-    console.log(sec, rate, res);
+    printBox({
+        title: data.data.lctreLrnSqno.toString(),
+        boxColor: "\x1b[32m"
+    }, data.data.playTime.toString(), "/", sec.toString(), "=", rate.toString(), res);
 }
 //#endregion callbacks
 
@@ -148,33 +156,30 @@ export default class Player {
     }) {
         await lesson.lecture.attend.create(token, data);
     }
-    play() {
-        if (this.timer === -1) {
-            (async()=>{
-                const startTime = new Date();
-                const playTime = await mvpPlayTime(this.fields.token, {
-                    subLessonSeq: this.fields.data.subLessonSeq
-                });
-                intervalCallback({
-                    token: this.fields.token,
-                    data: {
-                        memberSeq: this.fields.data.memberSeq,
-                        lctreLrnSqno: this.fields.data.lctreLrnSqno,
-                        startTime: startTime,
-                        playTime: playTime
-                    }
-                });
-                this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
-                    token: this.fields.token,
-                    data: {
-                        memberSeq: this.fields.data.memberSeq,
-                        lctreLrnSqno: this.fields.data.lctreLrnSqno,
-                        startTime: startTime,
-                        playTime: playTime
-                    }
-                });
-            })();
-        }
+    async play() {
+        if (this.timer !== -1) return;
+        const startTime = new Date();
+        const playTime = await mvpPlayTime(this.fields.token, {
+            subLessonSeq: this.fields.data.subLessonSeq
+        });
+        intervalCallback({
+            token: this.fields.token,
+            data: {
+                memberSeq: this.fields.data.memberSeq,
+                lctreLrnSqno: this.fields.data.lctreLrnSqno,
+                startTime: startTime,
+                playTime: playTime
+            }
+        });
+        this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
+            token: this.fields.token,
+            data: {
+                memberSeq: this.fields.data.memberSeq,
+                lctreLrnSqno: this.fields.data.lctreLrnSqno,
+                startTime: startTime,
+                playTime: playTime
+            }
+        });
     }
     pause() {
         //미지원

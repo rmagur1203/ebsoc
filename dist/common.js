@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.lecture = exports.school = exports.member = void 0;
+exports.lecture = exports.school = exports.noticeCommonMainList = exports.member = void 0;
 var axios_1 = __importDefault(require("axios"));
 var path_json_1 = __importDefault(require("./path.json"));
 require("./substitute");
@@ -66,6 +66,28 @@ function member(token) {
     });
 }
 exports.member = member;
+function noticeCommonMainList() {
+    return __awaiter(this, void 0, void 0, function () {
+        var url, req;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    url = "https://" + path_json_1.default.host + path_json_1.default.common.noticeCommonMainList;
+                    return [4 /*yield*/, axios_1.default({
+                            method: 'GET',
+                            url: url,
+                            headers: {
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                            }
+                        })];
+                case 1:
+                    req = _a.sent();
+                    return [2 /*return*/, req.data];
+            }
+        });
+    });
+}
+exports.noticeCommonMainList = noticeCommonMainList;
 exports.school = {
     info: function (token, schoolCode) {
         return __awaiter(this, void 0, void 0, function () {

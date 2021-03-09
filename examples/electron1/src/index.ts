@@ -18,7 +18,7 @@ function createWindow() {
   }))
 
   // 개발툴을 사용하기 위해 오픈한다.
-  win.webContents.openDevTools()
+  //win.webContents.openDevTools()
 
   // 윈도우가 닫힐 때 발생되는 이벤트다.
   win.on('closed', () => {

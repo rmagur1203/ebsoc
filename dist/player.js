@@ -40,9 +40,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mvpCurrentPercent = exports.mvpPlayTime = exports.mvpFileUrlPath = exports.mvpDto = exports.lessonList = exports.makeRate = exports.callApi = exports.encrypt = exports.iv = exports.key = exports.progressIntervalInSeconds = void 0;
+var get_video_duration_1 = require("get-video-duration");
 var crypto_js_1 = __importDefault(require("crypto-js"));
 var lecture_1 = require("./lecture");
 var common_1 = require("./common");
+var printbox_1 = __importDefault(require("./printbox"));
 var progressIntervalInSeconds = 5; //30;
 exports.progressIntervalInSeconds = progressIntervalInSeconds;
 var key = crypto_js_1.default.enc.Latin1.parse('l40jsfljasln32uf');
@@ -130,7 +132,10 @@ function mvpPlayTime(token, path) {
                 case 0: return [4 /*yield*/, mvpDto(token, path)];
                 case 1:
                     Dto = _a.sent();
-                    return [2 /*return*/, Dto.playTime];
+                    if (!!Dto.playTime) return [3 /*break*/, 3];
+                    return [4 /*yield*/, get_video_duration_1.getVideoDurationInSeconds(Dto.mvpFileUrlPath)];
+                case 2: return [2 /*return*/, _a.sent()];
+                case 3: return [2 /*return*/, Dto.playTime];
             }
         });
     });
@@ -168,7 +173,10 @@ var intervalCallback = function (data) { return __awaiter(void 0, void 0, void 0
                     })];
             case 1:
                 res = _a.sent();
-                console.log(sec, rate, res);
+                printbox_1.default({
+                    title: data.data.lctreLrnSqno.toString(),
+                    boxColor: "\x1b[32m"
+                }, data.data.playTime.toString(), "/", sec.toString(), "=", rate.toString(), res);
                 return [2 /*return*/];
         }
     });
@@ -206,42 +214,41 @@ var Player = /** @class */ (function () {
         });
     };
     Player.prototype.play = function () {
-        var _this = this;
-        if (this.timer === -1) {
-            (function () { return __awaiter(_this, void 0, void 0, function () {
-                var startTime, playTime;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            startTime = new Date();
-                            return [4 /*yield*/, mvpPlayTime(this.fields.token, {
-                                    subLessonSeq: this.fields.data.subLessonSeq
-                                })];
-                        case 1:
-                            playTime = _a.sent();
-                            intervalCallback({
-                                token: this.fields.token,
-                                data: {
-                                    memberSeq: this.fields.data.memberSeq,
-                                    lctreLrnSqno: this.fields.data.lctreLrnSqno,
-                                    startTime: startTime,
-                                    playTime: playTime
-                                }
-                            });
-                            this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
-                                token: this.fields.token,
-                                data: {
-                                    memberSeq: this.fields.data.memberSeq,
-                                    lctreLrnSqno: this.fields.data.lctreLrnSqno,
-                                    startTime: startTime,
-                                    playTime: playTime
-                                }
-                            });
+        return __awaiter(this, void 0, void 0, function () {
+            var startTime, playTime;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this.timer !== -1)
                             return [2 /*return*/];
-                    }
-                });
-            }); })();
-        }
+                        startTime = new Date();
+                        return [4 /*yield*/, mvpPlayTime(this.fields.token, {
+                                subLessonSeq: this.fields.data.subLessonSeq
+                            })];
+                    case 1:
+                        playTime = _a.sent();
+                        intervalCallback({
+                            token: this.fields.token,
+                            data: {
+                                memberSeq: this.fields.data.memberSeq,
+                                lctreLrnSqno: this.fields.data.lctreLrnSqno,
+                                startTime: startTime,
+                                playTime: playTime
+                            }
+                        });
+                        this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
+                            token: this.fields.token,
+                            data: {
+                                memberSeq: this.fields.data.memberSeq,
+                                lctreLrnSqno: this.fields.data.lctreLrnSqno,
+                                startTime: startTime,
+                                playTime: playTime
+                            }
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     Player.prototype.pause = function () {
         //미지원

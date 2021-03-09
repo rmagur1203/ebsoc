@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js';
-declare const progressIntervalInSeconds = 5;
+declare let progressIntervalInSeconds: number;
 export { progressIntervalInSeconds };
 declare const key: CryptoJS.lib.WordArray;
 declare const iv: CryptoJS.lib.WordArray;
@@ -63,7 +63,7 @@ export default class Player {
         officeEduCode: string;
         schoolCode: string;
     }): Promise<void>;
-    play(): void;
+    play(): Promise<void>;
     pause(): void;
     resume(): void;
     stop(): void;

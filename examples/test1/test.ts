@@ -1,48 +1,44 @@
 import { Auth, Cls, Common, Lecture, Player } from 'ebsoc';
+import printBox from './printbox'
 
+let urls = ["https://sel2.ebsoc.co.kr/class/tongsa1a/course/2220/lecture/516231"];
 (async () => {
-    let member = await Auth.login("아아디", "비밀번호");
+    for (let url of urls)
+        await run(url);
+})();
+
+async function run(url: string) {
+    let member = await Auth.login("rmagur12032", "djaak2799!");
     let token: string = member.data.token;
     let memberSeq: number = member.data.memberInfo.memberSeq;
-    let schoolCode: string = member.data.memberInfo.memberSchoolCode;
-    let classUrlPath = "tongsa1c";
-
-    let clsDetail = await Cls.lctClass.detail(token, {
-        classUrlPath: classUrlPath
-    });
-    let classSqno: number = clsDetail.data.classSqno;
-
-    clsDetail = await Cls.lctClass.classSqno(token, classSqno, { schoolCode: schoolCode });
-
-    let lessons = await Lecture.$classUrlPath.lesson.list(token, { classUrlPath });
-    let lessonSeq = 1815;
-
-    let learnings = await Lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, {
+    let classUrlPath: string = url.split('/')[4];
+    let lessonSeq: number = Number.parseInt(url.split('/')[6]);
+    let lectureSeq: number = Number.parseInt(url.split('/')[8]);
+    let lectures: Array<any> = (await Lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, {
         classUrlPath: classUrlPath,
         lessonSeq: lessonSeq
-    });
-    let subLessonSeq = 91;
-    let lectureLearningSeq = 7707;
+    })).data.list;
+    let lecture = lectures.find(x => x.lectureSeq == lectureSeq);
+    if (lecture === undefined) return console.log(urls, "찾을 수 없습니다.");
+    let lectureLearningSeq = lecture.lectureLearningSeq;
+    let subLessonSeq = lecture.lessonSeq;
 
-    /*
-    callApi(token, {
-        memberSeq: memberSeq,
-        lctreLrnSqno: lectureLearningSeq,
-        rate: 2
-    });
-    */
+    Player.progressIntervalInSeconds = 10;
     let player = new Player.default(token, {
-        memberSeq: member.data.memberInfo.memberSeq,
+        memberSeq: memberSeq,
         lctreLrnSqno: lectureLearningSeq,
         lessonSeq: lessonSeq,
         subLessonSeq: subLessonSeq
     });
+    if (lecture.rtpgsRt == 0)
+        player.create(token, {
+            contentsSeq: lecture.contentsSeq,
+            contentsTypeCode: lecture.contentsTypeCode,
+            lectureSeq: lectureSeq,
+            lessonAttendanceSeq: lecture.lessonAttendanceSeq,
+            lessonSeq: subLessonSeq,
+            officeEduCode: lecture.officeEduCode,
+            schoolCode: lecture.schoolCode
+        });
     player.play();
-    /*
-    let player = new Player({
-        token: token,
-        memberSeq: 
-    });
-    */
-    //encrypt(6915982, 4860, 32);
-})();
+}

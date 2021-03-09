@@ -35,57 +35,96 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var ebsoc_1 = require("ebsoc");
+var readline_1 = __importDefault(require("readline"));
+var input = readline_1.default.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+var question = function (query) { return new Promise(function (resolve, reject) {
+    input.question(query, function (answer) {
+        resolve(answer);
+    });
+}); };
+var exit = function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        process.stdin.setRawMode(true);
+        return [2 /*return*/, new Promise(function (resolve) { return process.stdin.once('data', function (data) {
+                process.exit(1);
+            }); })];
+    });
+}); };
+var urls = ["https://sel2.ebsoc.co.kr/class/tongsa1a/course/2220/lecture/516231"];
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var member, token, memberSeq, schoolCode, classUrlPath, clsDetail, classSqno, lessons, lessonSeq, learnings, subLessonSeq, lectureLearningSeq, player;
+    var _i, urls_1, url;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, ebsoc_1.auth.login("rmagur12032", "djaak2799!")];
+            case 0:
+                _i = 0, urls_1 = urls;
+                _a.label = 1;
             case 1:
-                member = _a.sent();
-                token = member.data.token;
-                memberSeq = member.data.memberInfo.memberSeq;
-                schoolCode = member.data.memberInfo.memberSchoolCode;
-                classUrlPath = "tongsa1c";
-                return [4 /*yield*/, ebsoc_1.cls.lctClass.detail(token, {
-                        classUrlPath: classUrlPath
-                    })];
+                if (!(_i < urls_1.length)) return [3 /*break*/, 4];
+                url = urls_1[_i];
+                return [4 /*yield*/, run(url)];
             case 2:
-                clsDetail = _a.sent();
-                classSqno = clsDetail.data.classSqno;
-                return [4 /*yield*/, ebsoc_1.cls.lctClass.classSqno(token, classSqno, { schoolCode: schoolCode })];
+                _a.sent();
+                _a.label = 3;
             case 3:
-                clsDetail = _a.sent();
-                return [4 /*yield*/, ebsoc_1.lecture.$classUrlPath.lesson.list(token, { classUrlPath: classUrlPath })];
-            case 4:
-                lessons = _a.sent();
-                lessonSeq = 1815;
-                return [4 /*yield*/, ebsoc_1.lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, {
-                        classUrlPath: classUrlPath,
-                        lessonSeq: lessonSeq
-                    })];
-            case 5:
-                learnings = _a.sent();
-                subLessonSeq = 91;
-                lectureLearningSeq = 7707;
-                /*
-                callApi(token, {
-                    memberSeq: memberSeq,
-                    lctreLrnSqno: lectureLearningSeq,
-                    rate: 2
-                });
-                */
-                console.log(ebsoc_1.Player);
-                player = new ebsoc_1.Player(token, {
-                    memberSeq: member.data.memberInfo.memberSeq,
-                    lctreLrnSqno: lectureLearningSeq,
-                    lessonSeq: lessonSeq,
-                    subLessonSeq: subLessonSeq
-                });
-                player.play();
-                return [2 /*return*/];
+                _i++;
+                return [3 /*break*/, 1];
+            case 4: return [2 /*return*/];
         }
     });
 }); })();
+function run(url) {
+    return __awaiter(this, void 0, void 0, function () {
+        var member, token, memberSeq, classUrlPath, lessonSeq, lectureSeq, lectures, lecture, lectureLearningSeq, subLessonSeq, player;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, ebsoc_1.Auth.login("rmagur12032", "djaak2799!")];
+                case 1:
+                    member = _a.sent();
+                    token = member.data.token;
+                    memberSeq = member.data.memberInfo.memberSeq;
+                    classUrlPath = url.split('/')[4];
+                    lessonSeq = Number.parseInt(url.split('/')[6]);
+                    lectureSeq = Number.parseInt(url.split('/')[8]);
+                    return [4 /*yield*/, ebsoc_1.Lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, {
+                            classUrlPath: classUrlPath,
+                            lessonSeq: lessonSeq
+                        })];
+                case 2:
+                    lectures = (_a.sent()).data.list;
+                    lecture = lectures.find(function (x) { return x.lectureSeq == lectureSeq; });
+                    if (lecture === undefined)
+                        return [2 /*return*/, console.log(urls, "찾을 수 없습니다.")];
+                    lectureLearningSeq = lecture.lectureLearningSeq;
+                    subLessonSeq = lecture.lessonSeq;
+                    ebsoc_1.Player.progressIntervalInSeconds = 10;
+                    player = new ebsoc_1.Player.default(token, {
+                        memberSeq: memberSeq,
+                        lctreLrnSqno: lectureLearningSeq,
+                        lessonSeq: lessonSeq,
+                        subLessonSeq: subLessonSeq
+                    });
+                    if (lecture.rtpgsRt == 0)
+                        player.create(token, {
+                            contentsSeq: lecture.contentsSeq,
+                            contentsTypeCode: lecture.contentsTypeCode,
+                            lectureSeq: lectureSeq,
+                            lessonAttendanceSeq: lecture.lessonAttendanceSeq,
+                            lessonSeq: subLessonSeq,
+                            officeEduCode: lecture.officeEduCode,
+                            schoolCode: lecture.schoolCode
+                        });
+                    player.play();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 //# sourceMappingURL=test.js.map
