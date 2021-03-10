@@ -35,30 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var ebsoc_1 = require("ebsoc");
-var readline_1 = __importDefault(require("readline"));
-var input = readline_1.default.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-var question = function (query) { return new Promise(function (resolve, reject) {
-    input.question(query, function (answer) {
-        resolve(answer);
-    });
-}); };
-var exit = function () { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        process.stdin.setRawMode(true);
-        return [2 /*return*/, new Promise(function (resolve) { return process.stdin.once('data', function (data) {
-                process.exit(1);
-            }); })];
-    });
-}); };
-var urls = ["https://sel2.ebsoc.co.kr/class/tongsa1a/course/2220/lecture/516231"];
+var urls = ["https://sel2.ebsoc.co.kr/class/totaldesign2021/course/2399/lecture/626673",
+    "https://sel2.ebsoc.co.kr/class/totaldesign2021/course/2399/lecture/626672",
+    "https://sel2.ebsoc.co.kr/class/totaldesign2021/course/2399/lecture/626674"];
 (function () { return __awaiter(void 0, void 0, void 0, function () {
     var _i, urls_1, url;
     return __generator(this, function (_a) {
@@ -104,14 +85,16 @@ function run(url) {
                         return [2 /*return*/, console.log(urls, "찾을 수 없습니다.")];
                     lectureLearningSeq = lecture.lectureLearningSeq;
                     subLessonSeq = lecture.lessonSeq;
-                    ebsoc_1.Player.progressIntervalInSeconds = 10;
+                    ebsoc_1.Player.progressIntervalInSeconds = 20;
                     player = new ebsoc_1.Player.default(token, {
                         memberSeq: memberSeq,
                         lctreLrnSqno: lectureLearningSeq,
                         lessonSeq: lessonSeq,
-                        subLessonSeq: subLessonSeq
+                        subLessonSeq: subLessonSeq,
+                        classUrlPath: classUrlPath
                     });
-                    if (lecture.rtpgsRt == 0)
+                    if (lecture.rtpgsRt == 0) {
+                        console.log("lecture create!");
                         player.create(token, {
                             contentsSeq: lecture.contentsSeq,
                             contentsTypeCode: lecture.contentsTypeCode,
@@ -121,6 +104,7 @@ function run(url) {
                             officeEduCode: lecture.officeEduCode,
                             schoolCode: lecture.schoolCode
                         });
+                    }
                     player.play();
                     return [2 /*return*/];
             }

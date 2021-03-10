@@ -7,6 +7,8 @@ import { lecture } from './common';
 
 import Path from './path.json';
 import printBox from './printbox';
+import { Cls } from '.';
+import { classListSearch, searchType } from './simple';
 
 let progressIntervalInSeconds: number = 5;//30;
 export { progressIntervalInSeconds };
@@ -22,7 +24,8 @@ type FieldType = {
         memberSeq: number,
         lctreLrnSqno: number,
         lessonSeq: number,
-        subLessonSeq: number
+        subLessonSeq: number,
+        classUrlPath: string
     },
     video: {
         url: string,
@@ -36,7 +39,8 @@ type CallbackData = {
         memberSeq: number,
         lctreLrnSqno: number,
         startTime: Date,
-        playTime: number
+        playTime: number,
+        appendTime: number,
     }
 }
 //#endregion type
@@ -68,9 +72,9 @@ export function callApi(token: string, data: { memberSeq: number, lctreLrnSqno: 
 }
 
 export function makeRate(current: number, duration: number) {
-    let rate = current / duration;
+    let rate = current / duration * 100;
     if (rate > 66) rate = 100;
-    return Math.min(rate, 100);
+    return Math.floor(Math.min(rate, 100));
 }
 
 export async function lessonList(token: string, path: { classUrlPath: string, lessonSeq: number }) {
@@ -107,7 +111,7 @@ export async function mvpCurrentPercent(token: string, path: { classUrlPath: str
 //#region callbacks
 const intervalCallback = async (data: CallbackData) => {
     let sec = (new Date().getTime() - data.data.startTime.getTime()) / 1000;
-    let rate = Math.floor(makeRate(sec, data.data.playTime));
+    let rate = Math.min(makeRate(sec, data.data.playTime) + data.data.appendTime, 100);
     let res = await callApi(data.token, {
         memberSeq: data.data.memberSeq,
         lctreLrnSqno: data.data.lctreLrnSqno,
@@ -116,7 +120,9 @@ const intervalCallback = async (data: CallbackData) => {
     printBox({
         title: data.data.lctreLrnSqno.toString(),
         boxColor: "\x1b[32m"
-    }, data.data.playTime.toString(), "/", sec.toString(), "=", rate.toString(), res);
+    }, [sec.toString(), "/", data.data.playTime.toString(), "=", rate.toString()],
+        [makeRate(sec, data.data.playTime), "+", data.data.appendTime, "=", rate.toString()],
+        [res]);
 }
 //#endregion callbacks
 
@@ -128,7 +134,8 @@ export default class Player {
         memberSeq: number,
         lctreLrnSqno: number,
         lessonSeq: number,
-        subLessonSeq: number
+        subLessonSeq: number,
+        classUrlPath: string
     }) {
         this.fields = {
             token: token,
@@ -136,7 +143,8 @@ export default class Player {
                 memberSeq: options.memberSeq,
                 lctreLrnSqno: options.lctreLrnSqno,
                 lessonSeq: options.lessonSeq,
-                subLessonSeq: options.subLessonSeq
+                subLessonSeq: options.subLessonSeq,
+                classUrlPath: options.classUrlPath
             },
             video: {
                 url: "",
@@ -162,13 +170,21 @@ export default class Player {
         const playTime = await mvpPlayTime(this.fields.token, {
             subLessonSeq: this.fields.data.subLessonSeq
         });
+        const percent = (await mvpCurrentPercent(this.fields.token, {
+            classUrlPath: this.fields.data.classUrlPath,
+            lessonSeq: this.fields.data.lessonSeq
+        }, {
+            subLessonSeq: this.fields.data.subLessonSeq
+        }))
+        const currentTime = percent * 100;
         intervalCallback({
             token: this.fields.token,
             data: {
                 memberSeq: this.fields.data.memberSeq,
                 lctreLrnSqno: this.fields.data.lctreLrnSqno,
                 startTime: startTime,
-                playTime: playTime
+                playTime: playTime,
+                appendTime: currentTime
             }
         });
         this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
@@ -177,7 +193,8 @@ export default class Player {
                 memberSeq: this.fields.data.memberSeq,
                 lctreLrnSqno: this.fields.data.lctreLrnSqno,
                 startTime: startTime,
-                playTime: playTime
+                playTime: playTime,
+                appendTime: currentTime
             }
         });
     }

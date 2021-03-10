@@ -11,6 +11,7 @@ declare type FieldType = {
         lctreLrnSqno: number;
         lessonSeq: number;
         subLessonSeq: number;
+        classUrlPath: string;
     };
     video: {
         url: string;
@@ -53,6 +54,7 @@ export default class Player {
         lctreLrnSqno: number;
         lessonSeq: number;
         subLessonSeq: number;
+        classUrlPath: string;
     });
     create(token: string, data: {
         contentsSeq: number;

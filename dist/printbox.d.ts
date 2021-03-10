@@ -5,4 +5,4 @@ export default function printBox(options: {
     titleColor?: string;
     boxColor?: string;
     bgColor?: string;
-}, ...lines: Array<any>): void;
+}, ...lines: Array<Array<any>>): void;

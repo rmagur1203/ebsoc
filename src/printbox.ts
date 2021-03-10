@@ -1,4 +1,4 @@
-export let maxLen = 100;
+export let maxLen = 120;
 
 export function lightPrintBox(title: string, ...lines: Array<string>) {
     console.log(`┎─${strip("─", title)}─┒`);
@@ -21,22 +21,23 @@ export default function printBox(options: {
     titleColor?: string,
     boxColor?: string,
     bgColor?: string
-}, ...lines: Array<any>) {
+}, ...lines: Array<Array<any>>) {
     options.title ||= "";
     options.titleColor ||= "\x1b[33m";
     options.boxColor ||= "";
     options.bgColor ||= "";
 
-    let count = maxLen - size(lines.map(x => tostr(x)).join(' ')) - 1;
-    
-    let header = `${options.bgColor}${options.boxColor}┎─\x1b[0m`; 
+    let header = `${options.bgColor}${options.boxColor}┎─\x1b[0m`;
     header += `${options.bgColor}${options.titleColor}${options.title}\x1b[0m`;
     header += `${options.bgColor}${options.boxColor}${"─".repeat(maxLen - size(options.title || ""))}─┒\x1b[0m`;
     console.log(header);
 
-    let bodyHead = `${options.bgColor}${options.boxColor}┃\x1b[0m${options.bgColor}`;
-    let bodyTail = `${options.bgColor}${options.boxColor}${' '.repeat(count)} ┃\x1b[0m`;
-    console.log(bodyHead, ...lines, bodyTail);
+    for (let line of lines) {
+        let count = maxLen - size(line.map(x => tostr(x)).join(' ')) - 1;
+        let bodyHead = `${options.bgColor}${options.boxColor}┃\x1b[0m${options.bgColor}`;
+        let bodyTail = `${options.bgColor}${options.boxColor}${' '.repeat(count)} ┃\x1b[0m`;
+        console.log(bodyHead, ...line, bodyTail);
+    }
 
     let footer = `${options.bgColor}${options.boxColor}┖─${"─".repeat(maxLen)}─┚\x1b[0m`;
     console.log(footer);

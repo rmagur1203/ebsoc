@@ -73,10 +73,10 @@ function callApi(token, data) {
 }
 exports.callApi = callApi;
 function makeRate(current, duration) {
-    var rate = current / duration;
+    var rate = current / duration * 100;
     if (rate > 66)
         rate = 100;
-    return Math.min(rate, 100);
+    return Math.floor(Math.min(rate, 100));
 }
 exports.makeRate = makeRate;
 function lessonList(token, path) {
@@ -165,7 +165,7 @@ var intervalCallback = function (data) { return __awaiter(void 0, void 0, void 0
         switch (_a.label) {
             case 0:
                 sec = (new Date().getTime() - data.data.startTime.getTime()) / 1000;
-                rate = Math.floor(makeRate(sec, data.data.playTime));
+                rate = Math.min(makeRate(sec, data.data.playTime) + data.data.appendTime, 100);
                 return [4 /*yield*/, callApi(data.token, {
                         memberSeq: data.data.memberSeq,
                         lctreLrnSqno: data.data.lctreLrnSqno,
@@ -176,7 +176,7 @@ var intervalCallback = function (data) { return __awaiter(void 0, void 0, void 0
                 printbox_1.default({
                     title: data.data.lctreLrnSqno.toString(),
                     boxColor: "\x1b[32m"
-                }, data.data.playTime.toString(), "/", sec.toString(), "=", rate.toString(), res);
+                }, [sec.toString(), "/", data.data.playTime.toString(), "=", rate.toString()], [makeRate(sec, data.data.playTime), "+", data.data.appendTime, "=", rate.toString()], [res]);
                 return [2 /*return*/];
         }
     });
@@ -192,7 +192,8 @@ var Player = /** @class */ (function () {
                 memberSeq: options.memberSeq,
                 lctreLrnSqno: options.lctreLrnSqno,
                 lessonSeq: options.lessonSeq,
-                subLessonSeq: options.subLessonSeq
+                subLessonSeq: options.subLessonSeq,
+                classUrlPath: options.classUrlPath
             },
             video: {
                 url: "",
@@ -215,7 +216,7 @@ var Player = /** @class */ (function () {
     };
     Player.prototype.play = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var startTime, playTime;
+            var startTime, playTime, percent, currentTime;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -227,13 +228,23 @@ var Player = /** @class */ (function () {
                             })];
                     case 1:
                         playTime = _a.sent();
+                        return [4 /*yield*/, mvpCurrentPercent(this.fields.token, {
+                                classUrlPath: this.fields.data.classUrlPath,
+                                lessonSeq: this.fields.data.lessonSeq
+                            }, {
+                                subLessonSeq: this.fields.data.subLessonSeq
+                            })];
+                    case 2:
+                        percent = (_a.sent());
+                        currentTime = percent * 100;
                         intervalCallback({
                             token: this.fields.token,
                             data: {
                                 memberSeq: this.fields.data.memberSeq,
                                 lctreLrnSqno: this.fields.data.lctreLrnSqno,
                                 startTime: startTime,
-                                playTime: playTime
+                                playTime: playTime,
+                                appendTime: currentTime
                             }
                         });
                         this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
@@ -242,7 +253,8 @@ var Player = /** @class */ (function () {
                                 memberSeq: this.fields.data.memberSeq,
                                 lctreLrnSqno: this.fields.data.lctreLrnSqno,
                                 startTime: startTime,
-                                playTime: playTime
+                                playTime: playTime,
+                                appendTime: currentTime
                             }
                         });
                         return [2 /*return*/];

@@ -6,7 +6,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.lightPrintBox = exports.maxLen = void 0;
-exports.maxLen = 100;
+exports.maxLen = 120;
 function lightPrintBox(title) {
     var lines = [];
     for (var _i = 1; _i < arguments.length; _i++) {
@@ -39,14 +39,17 @@ function printBox(options) {
     options.titleColor || (options.titleColor = "\x1b[33m");
     options.boxColor || (options.boxColor = "");
     options.bgColor || (options.bgColor = "");
-    var count = exports.maxLen - size(lines.map(function (x) { return tostr(x); }).join(' ')) - 1;
     var header = "" + options.bgColor + options.boxColor + "\u250E\u2500\u001B[0m";
     header += "" + options.bgColor + options.titleColor + options.title + "\u001B[0m";
     header += "" + options.bgColor + options.boxColor + "─".repeat(exports.maxLen - size(options.title || "")) + "\u2500\u2512\u001B[0m";
     console.log(header);
-    var bodyHead = "" + options.bgColor + options.boxColor + "\u2503\u001B[0m" + options.bgColor;
-    var bodyTail = "" + options.bgColor + options.boxColor + ' '.repeat(count) + " \u2503\u001B[0m";
-    console.log.apply(console, __spreadArray(__spreadArray([bodyHead], lines), [bodyTail]));
+    for (var _a = 0, lines_2 = lines; _a < lines_2.length; _a++) {
+        var line = lines_2[_a];
+        var count = exports.maxLen - size(line.map(function (x) { return tostr(x); }).join(' ')) - 1;
+        var bodyHead = "" + options.bgColor + options.boxColor + "\u2503\u001B[0m" + options.bgColor;
+        var bodyTail = "" + options.bgColor + options.boxColor + ' '.repeat(count) + " \u2503\u001B[0m";
+        console.log.apply(console, __spreadArray(__spreadArray([bodyHead], line), [bodyTail]));
+    }
     var footer = "" + options.bgColor + options.boxColor + "\u2516\u2500" + "─".repeat(exports.maxLen) + "\u2500\u251A\u001B[0m";
     console.log(footer);
     function tostr(obj) {
