@@ -35,6 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -159,7 +164,7 @@ function mvpCurrentPercent(token, path, search) {
 exports.mvpCurrentPercent = mvpCurrentPercent;
 //#endregion mvpfuncitons
 //#region callbacks
-var intervalCallback = function (data) { return __awaiter(void 0, void 0, void 0, function () {
+var intervalCallback = function (data, completeCallback) { return __awaiter(void 0, void 0, void 0, function () {
     var sec, rate, res;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -177,8 +182,20 @@ var intervalCallback = function (data) { return __awaiter(void 0, void 0, void 0
                     title: data.data.lctreLrnSqno.toString(),
                     boxColor: "\x1b[32m"
                 }, [sec.toString(), "/", data.data.playTime.toString(), "=", rate.toString()], [makeRate(sec, data.data.playTime), "+", data.data.appendTime, "=", rate.toString()], [res]);
+                if (rate >= 100)
+                    completeCallback(data);
                 return [2 /*return*/];
         }
+    });
+}); };
+var completeCallback = function (data) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        data.player.stop();
+        printbox_1.default({
+            title: data.data.lctreLrnSqno.toString(),
+            boxColor: "\x1b[33m"
+        }, ["status", ":", "\x1b[31mstopped"]);
+        return [2 /*return*/];
     });
 }); };
 //#endregion callbacks
@@ -237,7 +254,12 @@ var Player = /** @class */ (function () {
                     case 2:
                         percent = (_a.sent());
                         currentTime = percent * 100;
-                        intervalCallback({
+                        if (currentTime >= 100)
+                            return [2 /*return*/, printbox_1.default({
+                                    title: this.fields.data.lctreLrnSqno.toString(),
+                                    boxColor: "\x1b[34m"
+                                }, ["이미 학습한 영상입니다. \x1b[1m\x1b[34m(건너뜀)\x1b[0m"])];
+                        this.timer = setInitInterval(intervalCallback, progressIntervalInSeconds * 1000, {
                             token: this.fields.token,
                             data: {
                                 memberSeq: this.fields.data.memberSeq,
@@ -245,18 +267,9 @@ var Player = /** @class */ (function () {
                                 startTime: startTime,
                                 playTime: playTime,
                                 appendTime: currentTime
-                            }
-                        });
-                        this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
-                            token: this.fields.token,
-                            data: {
-                                memberSeq: this.fields.data.memberSeq,
-                                lctreLrnSqno: this.fields.data.lctreLrnSqno,
-                                startTime: startTime,
-                                playTime: playTime,
-                                appendTime: currentTime
-                            }
-                        });
+                            },
+                            player: this
+                        }, completeCallback);
                         return [2 /*return*/];
                 }
             });
@@ -275,4 +288,12 @@ var Player = /** @class */ (function () {
     return Player;
 }());
 exports.default = Player;
+function setInitInterval(handler, timeout) {
+    var args = [];
+    for (var _i = 2; _i < arguments.length; _i++) {
+        args[_i - 2] = arguments[_i];
+    }
+    handler.apply(void 0, args);
+    return setInterval.apply(void 0, __spreadArray([intervalCallback, timeout], args));
+}
 //# sourceMappingURL=player.js.map

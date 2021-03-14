@@ -41,8 +41,9 @@ type CallbackData = {
         startTime: Date,
         playTime: number,
         appendTime: number,
-    }
-}
+    },
+    player: Player
+};
 //#endregion type
 
 //#region basicfunctions
@@ -109,7 +110,7 @@ export async function mvpCurrentPercent(token: string, path: { classUrlPath: str
 }
 //#endregion mvpfuncitons
 //#region callbacks
-const intervalCallback = async (data: CallbackData) => {
+const intervalCallback = async (data: CallbackData, completeCallback: Function) => {
     let sec = (new Date().getTime() - data.data.startTime.getTime()) / 1000;
     let rate = Math.min(makeRate(sec, data.data.playTime) + data.data.appendTime, 100);
     let res = await callApi(data.token, {
@@ -123,6 +124,15 @@ const intervalCallback = async (data: CallbackData) => {
     }, [sec.toString(), "/", data.data.playTime.toString(), "=", rate.toString()],
         [makeRate(sec, data.data.playTime), "+", data.data.appendTime, "=", rate.toString()],
         [res]);
+    if (rate >= 100)
+        completeCallback(data);
+}
+const completeCallback = async (data: CallbackData) => {
+    data.player.stop();
+    printBox({
+        title: data.data.lctreLrnSqno.toString(),
+        boxColor: "\x1b[33m"
+    }, ["status", ":", "\x1b[31mstopped"]);
 }
 //#endregion callbacks
 
@@ -177,7 +187,12 @@ export default class Player {
             subLessonSeq: this.fields.data.subLessonSeq
         }))
         const currentTime = percent * 100;
-        intervalCallback({
+        if (currentTime >= 100)
+            return printBox({
+                title: this.fields.data.lctreLrnSqno.toString(),
+                boxColor: "\x1b[34m"
+            }, ["이미 학습한 영상입니다. \x1b[1m\x1b[34m(건너뜀)\x1b[0m"]);
+        this.timer = setInitInterval(intervalCallback, progressIntervalInSeconds * 1000, {
             token: this.fields.token,
             data: {
                 memberSeq: this.fields.data.memberSeq,
@@ -185,18 +200,9 @@ export default class Player {
                 startTime: startTime,
                 playTime: playTime,
                 appendTime: currentTime
-            }
-        });
-        this.timer = setInterval(intervalCallback, progressIntervalInSeconds * 1000, {
-            token: this.fields.token,
-            data: {
-                memberSeq: this.fields.data.memberSeq,
-                lctreLrnSqno: this.fields.data.lctreLrnSqno,
-                startTime: startTime,
-                playTime: playTime,
-                appendTime: currentTime
-            }
-        });
+            },
+            player: this
+        }, completeCallback);
     }
     pause() {
         //미지원
@@ -208,4 +214,9 @@ export default class Player {
         if (this.timer != -1)
             clearInterval(this.timer);
     }
+}
+
+function setInitInterval(handler: Function, timeout: number, ...args: any[]) {
+    handler(...args);
+    return setInterval(intervalCallback, timeout, ...args);
 }

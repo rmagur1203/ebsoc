@@ -20,12 +20,14 @@ export default function printBox(options: {
     title?: string,
     titleColor?: string,
     boxColor?: string,
-    bgColor?: string
+    bgColor?: string,
+    fgColor?: string
 }, ...lines: Array<Array<any>>) {
     options.title ||= "";
     options.titleColor ||= "\x1b[33m";
     options.boxColor ||= "";
     options.bgColor ||= "";
+    options.fgColor ||= "";
 
     let header = `${options.bgColor}${options.boxColor}┎─\x1b[0m`;
     header += `${options.bgColor}${options.titleColor}${options.title}\x1b[0m`;
@@ -33,8 +35,11 @@ export default function printBox(options: {
     console.log(header);
 
     for (let line of lines) {
-        let count = maxLen - size(line.map(x => tostr(x)).join(' ')) - 1;
-        let bodyHead = `${options.bgColor}${options.boxColor}┃\x1b[0m${options.bgColor}`;
+        let count = maxLen - size(line
+            .map(x => tostr(x))
+            .map(x => x.replace(/\x1b\[[0-9]*m/g, ''))
+            .join(' ')) - 1;
+        let bodyHead = `${options.bgColor}${options.boxColor}┃\x1b[0m${options.bgColor}${options.fgColor}`;
         let bodyTail = `${options.bgColor}${options.boxColor}${' '.repeat(count)} ┃\x1b[0m`;
         console.log(bodyHead, ...line, bodyTail);
     }
