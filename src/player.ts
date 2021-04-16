@@ -42,7 +42,8 @@ type CallbackData = {
         playTime: number,
         appendTime: number,
     },
-    player: Player
+    player: Player,
+    endCallback: Function
 };
 //#endregion type
 
@@ -69,6 +70,7 @@ export function encrypt(memberSeq: number, lctreLrnSqno: number, progressRate: n
 
 export function callApi(token: string, data: { memberSeq: number, lctreLrnSqno: number, rate: number }) {
     let encriptedProgressRate = encrypt(data.memberSeq, data.lctreLrnSqno, data.rate);
+    console.log(data);
     return student.learningProgress(token, data.lctreLrnSqno, { encriptedProgressRate });
 }
 
@@ -113,6 +115,8 @@ export async function mvpCurrentPercent(token: string, path: { classUrlPath: str
 const intervalCallback = async (data: CallbackData, completeCallback: Function) => {
     let sec = (new Date().getTime() - data.data.startTime.getTime()) / 1000;
     let rate = Math.min(makeRate(sec, data.data.playTime) + data.data.appendTime, 100);
+    if (rate >= 66) rate = 100;
+    console.log(data.data);
     let res = await callApi(data.token, {
         memberSeq: data.data.memberSeq,
         lctreLrnSqno: data.data.lctreLrnSqno,
@@ -133,6 +137,8 @@ const completeCallback = async (data: CallbackData) => {
         title: data.data.lctreLrnSqno.toString(),
         boxColor: "\x1b[33m"
     }, ["status", ":", "\x1b[31mstopped"]);
+    if (data.endCallback)
+        data.endCallback();
 }
 //#endregion callbacks
 
@@ -140,6 +146,7 @@ export default class Player {
     timer: number = -1;
     fields: FieldType;
     clearIntvl: number = NaN;
+    endCallback?: Function = undefined;
     constructor(token: string, options: {
         memberSeq: number,
         lctreLrnSqno: number,
@@ -163,6 +170,14 @@ export default class Player {
             current: new Date()
         };
     }
+    async openVideo() {
+        let path = await mvpFileUrlPath(this.fields.token, {
+            subLessonSeq: this.fields.data.subLessonSeq
+        });
+        var start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
+        console.log(path);
+        return require('child_process').exec(start + ' ' + path);
+    }
     async create(token: string, data: {
         contentsSeq: number
         contentsTypeCode: string
@@ -185,13 +200,17 @@ export default class Player {
             lessonSeq: this.fields.data.lessonSeq
         }, {
             subLessonSeq: this.fields.data.subLessonSeq
-        }))
+        }));
         const currentTime = percent * 100;
-        if (currentTime >= 100)
-            return printBox({
+        if (currentTime >= 100) {
+            printBox({
                 title: this.fields.data.lctreLrnSqno.toString(),
                 boxColor: "\x1b[34m"
             }, ["이미 학습한 영상입니다. \x1b[1m\x1b[34m(건너뜀)\x1b[0m"]);
+            if (this.endCallback)
+                this.endCallback();
+            return;
+        }
         this.timer = setInitInterval(intervalCallback, progressIntervalInSeconds * 1000, {
             token: this.fields.token,
             data: {
@@ -201,7 +220,8 @@ export default class Player {
                 playTime: playTime,
                 appendTime: currentTime
             },
-            player: this
+            player: this,
+            endCallback: this.endCallback
         }, completeCallback);
     }
     pause() {
@@ -218,5 +238,5 @@ export default class Player {
 
 function setInitInterval(handler: Function, timeout: number, ...args: any[]) {
     handler(...args);
-    return setInterval(intervalCallback, timeout, ...args);
+    return setInterval(handler, timeout, ...args);
 }

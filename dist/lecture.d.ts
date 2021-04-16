@@ -33,6 +33,10 @@ export declare let $classUrlPath: {
         list: (token: string, path: {
             classUrlPath: string;
         }) => Promise<any>;
+        info: (token: string, path: {
+            classUrlPath: string;
+            lessonSeq: number;
+        }) => Promise<any>;
         lecture: {
             attend: {
                 list: {

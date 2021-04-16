@@ -49,6 +49,7 @@ export default class Player {
     timer: number;
     fields: FieldType;
     clearIntvl: number;
+    endCallback?: Function;
     constructor(token: string, options: {
         memberSeq: number;
         lctreLrnSqno: number;
@@ -56,6 +57,7 @@ export default class Player {
         subLessonSeq: number;
         classUrlPath: string;
     });
+    openVideo(): Promise<any>;
     create(token: string, data: {
         contentsSeq: number;
         contentsTypeCode: string;

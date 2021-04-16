@@ -74,6 +74,7 @@ function encrypt(memberSeq, lctreLrnSqno, progressRate) {
 exports.encrypt = encrypt;
 function callApi(token, data) {
     var encriptedProgressRate = encrypt(data.memberSeq, data.lctreLrnSqno, data.rate);
+    console.log(data);
     return lecture_1.student.learningProgress(token, data.lctreLrnSqno, { encriptedProgressRate: encriptedProgressRate });
 }
 exports.callApi = callApi;
@@ -171,6 +172,9 @@ var intervalCallback = function (data, completeCallback) { return __awaiter(void
             case 0:
                 sec = (new Date().getTime() - data.data.startTime.getTime()) / 1000;
                 rate = Math.min(makeRate(sec, data.data.playTime) + data.data.appendTime, 100);
+                if (rate >= 66)
+                    rate = 100;
+                console.log(data.data);
                 return [4 /*yield*/, callApi(data.token, {
                         memberSeq: data.data.memberSeq,
                         lctreLrnSqno: data.data.lctreLrnSqno,
@@ -195,6 +199,8 @@ var completeCallback = function (data) { return __awaiter(void 0, void 0, void 0
             title: data.data.lctreLrnSqno.toString(),
             boxColor: "\x1b[33m"
         }, ["status", ":", "\x1b[31mstopped"]);
+        if (data.endCallback)
+            data.endCallback();
         return [2 /*return*/];
     });
 }); };
@@ -203,6 +209,7 @@ var Player = /** @class */ (function () {
     function Player(token, options) {
         this.timer = -1;
         this.clearIntvl = NaN;
+        this.endCallback = undefined;
         this.fields = {
             token: token,
             data: {
@@ -219,6 +226,23 @@ var Player = /** @class */ (function () {
             current: new Date()
         };
     }
+    Player.prototype.openVideo = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var path, start;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, mvpFileUrlPath(this.fields.token, {
+                            subLessonSeq: this.fields.data.subLessonSeq
+                        })];
+                    case 1:
+                        path = _a.sent();
+                        start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
+                        console.log(path);
+                        return [2 /*return*/, require('child_process').exec(start + ' ' + path)];
+                }
+            });
+        });
+    };
     Player.prototype.create = function (token, data) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -254,11 +278,15 @@ var Player = /** @class */ (function () {
                     case 2:
                         percent = (_a.sent());
                         currentTime = percent * 100;
-                        if (currentTime >= 100)
-                            return [2 /*return*/, printbox_1.default({
-                                    title: this.fields.data.lctreLrnSqno.toString(),
-                                    boxColor: "\x1b[34m"
-                                }, ["이미 학습한 영상입니다. \x1b[1m\x1b[34m(건너뜀)\x1b[0m"])];
+                        if (currentTime >= 100) {
+                            printbox_1.default({
+                                title: this.fields.data.lctreLrnSqno.toString(),
+                                boxColor: "\x1b[34m"
+                            }, ["이미 학습한 영상입니다. \x1b[1m\x1b[34m(건너뜀)\x1b[0m"]);
+                            if (this.endCallback)
+                                this.endCallback();
+                            return [2 /*return*/];
+                        }
                         this.timer = setInitInterval(intervalCallback, progressIntervalInSeconds * 1000, {
                             token: this.fields.token,
                             data: {
@@ -268,7 +296,8 @@ var Player = /** @class */ (function () {
                                 playTime: playTime,
                                 appendTime: currentTime
                             },
-                            player: this
+                            player: this,
+                            endCallback: this.endCallback
                         }, completeCallback);
                         return [2 /*return*/];
                 }
@@ -294,6 +323,6 @@ function setInitInterval(handler, timeout) {
         args[_i - 2] = arguments[_i];
     }
     handler.apply(void 0, args);
-    return setInterval.apply(void 0, __spreadArray([intervalCallback, timeout], args));
+    return setInterval.apply(void 0, __spreadArray([handler, timeout], args));
 }
 //# sourceMappingURL=player.js.map

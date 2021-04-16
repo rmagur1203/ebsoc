@@ -2,71 +2,72 @@
     "host": "sel2.ebsoc.co.kr",
     "auth": {
         "host": "ebsoc.co.kr",
-        "login": "/auth_domain/auth/api/v1/login",
-        "checkCertifiedTeacher": "/auth_domain/auth/api/v1/member/checkCertifiedTeacher"
+        "login": "/auth/api/v1/login",
+        "checkCertifiedTeacher": "/auth/api/v1/member/checkCertifiedTeacher"
     },
     "common": {
-        "member": "/common_domain/common/api/v1/member",
-        "noticeCommonMainList": "/common_domain/common/api/v1/noticeCommonMainList",
-        "noticeSchoolMainList": "/common_domain/common/api/v1/noticeSchoolMainList",
+        "member": "/common/api/v1/member",
+        "noticeCommonMainList": "/common/api/v1/noticeCommonMainList",
+        "noticeSchoolMainList": "/common/api/v1/noticeSchoolMainList",
         "school": {
-            "info": "/common_domain/common/api/v1/school/info/${schoolCode}"
+            "info": "/common/api/v1/school/info/${schoolCode}"
         },
         "lecture": {
             "detail": {
                 "lesson": {
-                    "$subLessonSeq": "/common_domain/common/api/v1/lecture/detail/lesson/${subLessonSeq}" 
+                    "$subLessonSeq": "/common/api/v1/lecture/detail/lesson/${subLessonSeq}" 
                 }
             }
         }
     },
     "cls": {
         "mypage": {
-            "myClassListByTabType": "/common_domain/cls/api/v1/mypage/myClassListByTabType"
+            "myClassListByTabType": "/cls/api/v1/mypage/myClassListByTabType"
         },
         "cmyNote": {
-            "receiptNotOpenCount": "/common_domain/cls/api/v1/cmyNote/receiptNotOpenCount"
+            "receiptNotOpenCount": "/cls/api/v1/cmyNote/receiptNotOpenCount"
         },
         "communityChattingRoom": {
-            "communityMyChattingParticipationListCnt": "/common_domain/cls/api/v1/communityChattingRoom/communityMyChattingParticipationListCnt"
+            "communityMyChattingParticipationListCnt": "/cls/api/v1/communityChattingRoom/communityMyChattingParticipationListCnt"
         },
         "school": {
-            "schoolClassList": "/common_domain/cls/api/v1/school/schoolClassList"
+            "schoolClassList": "/cls/api/v1/school/schoolClassList"
         },
         "lctClass": {
-            "detail": "/common_domain/cls/api/v1/lctClass/detail",
-            "class": "/common_domain/cls/api/v1/lctClass/${classSqno}"
+            "detail": "/cls/api/v1/lctClass/detail",
+            "class": "/cls/api/v1/lctClass/${classSqno}"
         },
-        "communityBoardNoticeMainList": "/common_domain/cls/api/v1/communityBoardNoticeMainList"
+        "communityBoardNoticeMainList": "/cls/api/v1/communityBoardNoticeMainList"
     },
     "lecture": {
         "schedule": {
             "student": {
-                "list": "/common_domain/lecture/api/v1/schedule/student/list"
+                "list": "/lecture/api/v1/schedule/student/list"
             }
         },
         "student": {
-            "learning": "/common_domain/lecture/api/v1/student/learning",
+            "learning": "/lecture/api/v1/student/learning",
             "learningProgress": "/lecture/api/v1/student/learning/${lectureLearningSeq}/progress"
         },
         "st": {
             "lesson": {
-                "list": "/common_domain/lecture/api/v1/st/lesson/list"
+                "list": "/lecture/api/v1/st/lesson/list"
             }
         },
         "lesson": {
             "lecture": {
                 "attend": {
-                    "create": "/common_domain/lecture/api/v1/lesson/lecture/attend/create"
+                    "create": "/lecture/api/v1/lesson/lecture/attend/create"
                 }
             }
         },
         "$classUrlPath": {
             "lesson": {
-                "list": "/common_domain/lecture/api/v1/${classUrlPath}/lesson/list",
+                "list": "/lecture/api/v1/${classUrlPath}/lesson/list",
+                "info": "/lecture/api/v1/${classUrlPath}/lesson/info/${lessonSeq}",
                 "lecture": {
                     "attend": {
-                        "list": "/common_domain/lecture/api/v1/${classUrlPath}/lesson/lecture/attend/list/${lessonSeq}"
+                        "list": "/lecture/api/v1/${classUrlPath}/lesson/lecture/attend/list/${lessonSeq}"
                     }
                 }
             }

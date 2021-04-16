@@ -70,42 +70,71 @@ var password = function (query) { return new Promise(function (resolve) {
         resolve(answer);
     });
 }); };
-var urls = ["https://sel2.ebsoc.co.kr/class/totaldesign2021/course/2399/lecture/616773"];
-var id, pwd;
-(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _i, urls_1, url;
+var run = function (url, member) { return new Promise(function (resolve) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, memberSeq, classUrlPath, lessonSeq, lectureSeq, lectures, lecture, lectureLearningSeq, subLessonSeq, player;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, question("아이디: ")];
+            case 0:
+                token = member.data.token;
+                memberSeq = member.data.memberInfo.memberSeq;
+                classUrlPath = url.split('/')[4];
+                lessonSeq = Number.parseInt(url.split('/')[6]);
+                lectureSeq = Number.parseInt(url.split('/')[8]);
+                return [4 /*yield*/, ebsoc_1.Lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, {
+                        classUrlPath: classUrlPath,
+                        lessonSeq: lessonSeq
+                    })];
             case 1:
-                id = _a.sent();
-                return [4 /*yield*/, password("비밀번호: ")];
-            case 2:
-                pwd = _a.sent();
-                _i = 0, urls_1 = urls;
-                _a.label = 3;
-            case 3:
-                if (!(_i < urls_1.length)) return [3 /*break*/, 6];
-                url = urls_1[_i];
-                return [4 /*yield*/, run(url)];
-            case 4:
-                _a.sent();
-                _a.label = 5;
-            case 5:
-                _i++;
-                return [3 /*break*/, 3];
-            case 6:
-                process_1.exit();
+                lectures = (_a.sent()).data.list;
+                console.log(lectures);
+                lecture = lectures.find(function (x) { return x.lectureSeq == lectureSeq; });
+                if (lecture === undefined)
+                    return [2 /*return*/, console.log(urls, "찾을 수 없습니다.")];
+                lectureLearningSeq = lecture.lectureLearningSeq;
+                subLessonSeq = lecture.lessonSeq;
+                player = new ebsoc_1.Player.default(token, {
+                    memberSeq: memberSeq,
+                    lctreLrnSqno: lectureLearningSeq,
+                    lessonSeq: lessonSeq,
+                    subLessonSeq: subLessonSeq,
+                    classUrlPath: classUrlPath
+                });
+                ebsoc_1.Player.progressIntervalInSeconds = 20;
+                if (lecture.rtpgsRt == 0) {
+                    console.log("lecture create!");
+                    player.create(token, {
+                        contentsSeq: lecture.contentsSeq,
+                        contentsTypeCode: lecture.contentsTypeCode,
+                        lectureSeq: lectureSeq,
+                        lessonAttendanceSeq: lecture.lessonAttendanceSeq,
+                        lessonSeq: subLessonSeq,
+                        officeEduCode: lecture.officeEduCode,
+                        schoolCode: lecture.schoolCode
+                    });
+                }
+                player.endCallback = function () {
+                    resolve(null);
+                };
+                player.play();
+                player.openVideo();
                 return [2 /*return*/];
         }
     });
-}); })();
-function run(url) {
-    return __awaiter(this, void 0, void 0, function () {
-        var member, token, memberSeq, classUrlPath, lessonSeq, lectureSeq, lectures, lecture, lectureLearningSeq, subLessonSeq, player;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, ebsoc_1.Auth.login(id, pwd).catch(function (ex) {
+}); }); };
+var courses = ["https://sel2.ebsoc.co.kr/class/sunrinenglisha/course/5326", "https://sel2.ebsoc.co.kr/class/jinro112/course/5139"];
+var urls = [];
+var id, pwd;
+(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var member, _i, courses_1, course, _a, _b, _c, urls_1, url;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
+            case 0: return [4 /*yield*/, question("아이디: ")];
+            case 1:
+                id = _d.sent();
+                return [4 /*yield*/, password("비밀번호: ")];
+            case 2:
+                pwd = _d.sent();
+                return [4 /*yield*/, ebsoc_1.Auth.login(id, pwd).catch(function (ex) {
                         //if (ex.response.status === 404)
                         ebsoc_1.PrintBox.default({
                             title: "로그인",
@@ -114,39 +143,56 @@ function run(url) {
                         }, [ex.response.data.message]);
                         process_1.exit();
                     })];
+            case 3:
+                member = _d.sent();
+                _i = 0, courses_1 = courses;
+                _d.label = 4;
+            case 4:
+                if (!(_i < courses_1.length)) return [3 /*break*/, 7];
+                course = courses_1[_i];
+                _b = (_a = urls).concat;
+                return [4 /*yield*/, GetCourseUrls(member.data.token, course)];
+            case 5:
+                urls = _b.apply(_a, [_d.sent()]);
+                _d.label = 6;
+            case 6:
+                _i++;
+                return [3 /*break*/, 4];
+            case 7:
+                _c = 0, urls_1 = urls;
+                _d.label = 8;
+            case 8:
+                if (!(_c < urls_1.length)) return [3 /*break*/, 11];
+                url = urls_1[_c];
+                console.log(url);
+                return [4 /*yield*/, run(url, member)];
+            case 9:
+                _d.sent();
+                _d.label = 10;
+            case 10:
+                _c++;
+                return [3 /*break*/, 8];
+            case 11:
+                process_1.exit();
+                return [2 /*return*/];
+        }
+    });
+}); })();
+function GetCourseUrls(token, course) {
+    return __awaiter(this, void 0, void 0, function () {
+        var data, urls;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, ebsoc_1.Lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq(token, {
+                        classUrlPath: course.split('/')[4],
+                        lessonSeq: parseInt(course.split('/')[6])
+                    })];
                 case 1:
-                    member = _a.sent();
-                    console.log(member);
-                    return [2 /*return*/];
-                case 2:
-                    lectures = (_a.sent()).data.list;
-                    lecture = lectures.find(function (x) { return x.lectureSeq == lectureSeq; });
-                    if (lecture === undefined)
-                        return [2 /*return*/, console.log(urls, "찾을 수 없습니다.")];
-                    lectureLearningSeq = lecture.lectureLearningSeq;
-                    subLessonSeq = lecture.lessonSeq;
-                    player = new ebsoc_1.Player.default(token, {
-                        memberSeq: memberSeq,
-                        lctreLrnSqno: lectureLearningSeq,
-                        lessonSeq: lessonSeq,
-                        subLessonSeq: subLessonSeq,
-                        classUrlPath: classUrlPath
-                    });
-                    ebsoc_1.Player.progressIntervalInSeconds = 20;
-                    if (lecture.rtpgsRt == 0) {
-                        console.log("lecture create!");
-                        player.create(token, {
-                            contentsSeq: lecture.contentsSeq,
-                            contentsTypeCode: lecture.contentsTypeCode,
-                            lectureSeq: lectureSeq,
-                            lessonAttendanceSeq: lecture.lessonAttendanceSeq,
-                            lessonSeq: subLessonSeq,
-                            officeEduCode: lecture.officeEduCode,
-                            schoolCode: lecture.schoolCode
-                        });
-                    }
-                    player.play();
-                    return [2 /*return*/];
+                    data = _a.sent();
+                    urls = data.data.list
+                        .filter(function (x) { return x.contentsTypeCode == "001"; })
+                        .map(function (x) { return course + "/lecture/" + x.lectureSeq; });
+                    return [2 /*return*/, urls];
             }
         });
     });
