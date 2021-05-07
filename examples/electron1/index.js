@@ -14,12 +14,12 @@ function createWindow() {
     win = new electron_1.BrowserWindow({ width: 800, height: 600 });
     //index.html를 로드합니다.
     win.loadURL(url_1.default.format({
-        pathname: path_1.default.join(__dirname, 'index.html'),
+        pathname: path_1.default.join(__dirname, 'views', 'index.html'),
         protocol: 'file:',
         slashes: true
     }));
     // 개발툴을 사용하기 위해 오픈한다.
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools()
     // 윈도우가 닫힐 때 발생되는 이벤트다.
     win.on('closed', function () {
     });
