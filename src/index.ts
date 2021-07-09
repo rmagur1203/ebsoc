@@ -5,3 +5,4 @@ export * as Lecture from './lecture';
 export * as Player from './player';
 export * as PrintBox from './printbox';
 export * as Colors from './colors';
+export * as Wrapper from './wrapper';

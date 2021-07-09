@@ -57,6 +57,9 @@ export let lecture = {
                     }
                 });
                 return req.data;
+            },
+            ContentsDto: async function (token: string, path: { subLessonSeq: number }) {
+                
             }
         }
     }

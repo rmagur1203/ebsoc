@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Colors = exports.PrintBox = exports.Player = exports.Lecture = exports.Common = exports.Cls = exports.Auth = void 0;
+exports.Wrapper = exports.Colors = exports.PrintBox = exports.Player = exports.Lecture = exports.Common = exports.Cls = exports.Auth = void 0;
 exports.Auth = __importStar(require("./auth"));
 exports.Cls = __importStar(require("./cls"));
 exports.Common = __importStar(require("./common"));
@@ -27,4 +27,5 @@ exports.Lecture = __importStar(require("./lecture"));
 exports.Player = __importStar(require("./player"));
 exports.PrintBox = __importStar(require("./printbox"));
 exports.Colors = __importStar(require("./colors"));
+exports.Wrapper = __importStar(require("./wrapper"));
 //# sourceMappingURL=index.js.map

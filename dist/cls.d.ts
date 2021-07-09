@@ -10,6 +10,9 @@ export declare let mypage: {
 export declare let cmyNote: {
     receiptNotOpenCount: (token: string) => Promise<any>;
 };
+export declare let cmyNotification: {
+    totalCount: (token: string, openYn: string) => Promise<any>;
+};
 export declare let communityChattingRoom: {
     communityMyChattingParticipationListCnt: (token: string) => Promise<any>;
 };

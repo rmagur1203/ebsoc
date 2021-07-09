@@ -32,6 +32,24 @@ export let cmyNote = {
     }
 };
 
+export let cmyNotification = {
+    totalCount: async function (token: string, openYn: string) {
+        let url: string = "https://" + path.host + path.cls.cmyNotification.totalCount;
+        let req = await axios({
+            method: 'POST',
+            url: url,
+            headers: {
+                "X-AUTH-TOKEN": token,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+            },
+            data: {
+                openYn: openYn
+            }
+        });
+        return req.data;
+    }
+}
+
 export let communityChattingRoom = {
     communityMyChattingParticipationListCnt: async function (token: string) {
         let url: string = "https://" + path.host + path.cls.communityChattingRoom.communityMyChattingParticipationListCnt;

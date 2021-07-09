@@ -10,6 +10,9 @@ export declare let lecture: {
             $subLessonSeq: (token: string, path: {
                 subLessonSeq: number;
             }) => Promise<any>;
+            ContentsDto: (token: string, path: {
+                subLessonSeq: number;
+            }) => Promise<void>;
         };
     };
 };

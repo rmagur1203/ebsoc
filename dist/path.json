@@ -27,6 +27,9 @@
         "cmyNote": {
             "receiptNotOpenCount": "/cls/api/v1/cmyNote/receiptNotOpenCount"
         },
+        "cmyNotification": {
+            "totalCount": "/cls/api/v1/cmyNotification/totalCount"
+        },
         "communityChattingRoom": {
             "communityMyChattingParticipationListCnt": "/cls/api/v1/communityChattingRoom/communityMyChattingParticipationListCnt"
         },

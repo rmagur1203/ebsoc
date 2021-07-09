@@ -10,9 +10,9 @@ function createWindow() {
   // 브라우저 창을 만듭니다.
   win = new BrowserWindow({ width: 800, height: 600 })
 
-  //index.html를 로드합니다.
+  //login.html를 로드합니다.
   win.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
+    pathname: path.join(__dirname, 'views', 'login.html'),
     protocol: 'file:',
     slashes: true
   }))
