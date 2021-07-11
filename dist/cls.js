@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.communityBoardNoticeMainList = exports.classMenu = exports.lctClass = exports.school = exports.communityChattingRoom = exports.cmyNotification = exports.cmyNote = exports.mypage = void 0;
+exports.communityBoardNoticeMainList = exports.classMember = exports.classMenu = exports.lctClass = exports.school = exports.communityChattingRoom = exports.cmyNotification = exports.cmyNote = exports.mypage = void 0;
 var axios_1 = __importDefault(require("axios"));
 var path_json_1 = __importDefault(require("./path.json"));
 exports.mypage = {
@@ -219,10 +219,52 @@ exports.lctClass = {
 exports.classMenu = {
     menuList: function (token, data) {
         return __awaiter(this, void 0, void 0, function () {
+            var url, req;
             return __generator(this, function (_a) {
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        url = "https://" + path_json_1.default.host + path_json_1.default.cls.classMenu.menuList;
+                        return [4 /*yield*/, axios_1.default({
+                                method: 'POST',
+                                url: url,
+                                headers: {
+                                    "X-AUTH-TOKEN": token,
+                                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                                },
+                                data: data
+                            })];
+                    case 1:
+                        req = _a.sent();
+                        return [2 /*return*/, req.data];
+                }
             });
         });
+    }
+};
+exports.classMember = {
+    $classUrlPath: {
+        isMember: function (token, Path) {
+            return __awaiter(this, void 0, void 0, function () {
+                var url, req;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            url = "https://" + path_json_1.default.host + path_json_1.default.cls.classMember.$classUrlPath.isMember;
+                            return [4 /*yield*/, axios_1.default({
+                                    method: 'GET',
+                                    url: url,
+                                    headers: {
+                                        "X-AUTH-TOKEN": token,
+                                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                                    }
+                                })];
+                        case 1:
+                            req = _a.sent();
+                            return [2 /*return*/, req.data];
+                    }
+                });
+            });
+        }
     }
 };
 function communityBoardNoticeMainList(token, data) {

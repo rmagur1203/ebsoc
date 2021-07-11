@@ -32,6 +32,10 @@ export declare let $classUrlPath: {
     lesson: {
         list: (token: string, path: {
             classUrlPath: string;
+        }, query: {
+            atltStsCd: any;
+            orderBy: number;
+            lsnNm?: string;
         }) => Promise<any>;
         info: (token: string, path: {
             classUrlPath: string;

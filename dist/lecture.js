@@ -151,7 +151,7 @@ exports.lesson = {
 };
 exports.$classUrlPath = {
     lesson: {
-        list: function (token, path) {
+        list: function (token, path, query) {
             return __awaiter(this, void 0, void 0, function () {
                 var url, req;
                 return __generator(this, function (_a) {

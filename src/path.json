@@ -40,6 +40,14 @@
             "detail": "/cls/api/v1/lctClass/detail",
             "class": "/cls/api/v1/lctClass/${classSqno}"
         },
+        "classMenu": {
+            "menuList": "/cls/api/v1/classMenu/menuList"
+        },
+        "classMember": {
+            "$classUrlPath": {
+                "isMember": "/cls/api/v1/classMember/tongsa1a/isMmber"
+            }
+        },
         "communityBoardNoticeMainList": "/cls/api/v1/communityBoardNoticeMainList"
     },
     "lecture": {
@@ -70,7 +78,12 @@
                 "info": "/lecture/api/v1/${classUrlPath}/lesson/info/${lessonSeq}",
                 "lecture": {
                     "attend": {
-                        "list": "/lecture/api/v1/${classUrlPath}/lesson/lecture/attend/list/${lessonSeq}"
+                        "list": {
+                            "$lessonSeq": "/lecture/api/v1/${classUrlPath}/lesson/lecture/attend/list/${lessonSeq}",
+                            "_$lessonSeq": {
+                                "$subLessonSeq": "/lecture/api/v1/tongsa1a/lesson/lecture/attend/list/${lessonSeq}/${subLessonSeq}"
+                            }
+                        },
                     }
                 }
             }

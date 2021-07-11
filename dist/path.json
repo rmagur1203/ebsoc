@@ -40,6 +40,14 @@
             "detail": "/cls/api/v1/lctClass/detail",
             "class": "/cls/api/v1/lctClass/${classSqno}"
         },
+        "classMenu": {
+            "menuList": "/cls/api/v1/classMenu/menuList"
+        },
+        "classMember": {
+            "$classUrlPath": {
+                "isMember": "/cls/api/v1/classMember/tongsa1a/isMmber"
+            }
+        },
         "communityBoardNoticeMainList": "/cls/api/v1/communityBoardNoticeMainList"
     },
     "lecture": {
