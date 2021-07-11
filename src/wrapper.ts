@@ -73,10 +73,11 @@ export class SimplePlayer {
     private officeEduCode: any;
     private schoolCode: any;
     private subLessonSeq: number;
-    constructor(token: string, classUrlPath: string, lessonSeq: number) {
+    constructor(token: string, classUrlPath: string, lessonSeq: number, subLessonSeq: number) {
         this.token = token;
         this.classUrlPath = classUrlPath;
         this.lessonSeq = lessonSeq;
+        this.subLessonSeq = subLessonSeq;
     }
     async courseData() {
         try {

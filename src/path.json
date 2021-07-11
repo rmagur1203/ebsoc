@@ -83,7 +83,7 @@
                             "_$lessonSeq": {
                                 "$subLessonSeq": "/lecture/api/v1/tongsa1a/lesson/lecture/attend/list/${lessonSeq}/${subLessonSeq}"
                             }
-                        },
+                        }
                     }
                 }
             }
