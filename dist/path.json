@@ -81,7 +81,7 @@
                         "list": {
                             "$lessonSeq": "/lecture/api/v1/${classUrlPath}/lesson/lecture/attend/list/${lessonSeq}",
                             "_$lessonSeq": {
-                                "$subLessonSeq": "/lecture/api/v1/tongsa1a/lesson/lecture/attend/list/${lessonSeq}/${subLessonSeq}"
+                                "$subLessonSeq": "/lecture/api/v1/${classUrlPath}/lesson/lecture/attend/list/${lessonSeq}/${subLessonSeq}"
                             }
                         }
                     }

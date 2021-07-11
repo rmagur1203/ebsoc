@@ -99,8 +99,6 @@ exports.student = {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        ///common_domain/lecture/api/v1/sunrinkorean1/lesson/lecture/attend/list/1903 => lectureLearningSeq
-                        console.log(lectureLearningSeq);
                         url = "https://" + path_json_1.default.host + path_json_1.default.lecture.student.learningProgress
                             .replace('${lectureLearningSeq}', lectureLearningSeq.toString());
                         return [4 /*yield*/, axios_1.default({
@@ -182,7 +180,6 @@ exports.$classUrlPath = {
                         case 0:
                             url = "https://" + path_json_1.default.host + path_json_1.default.lecture.$classUrlPath.lesson.info
                                 .substitute(path);
-                            console.log(url);
                             return [4 /*yield*/, axios_1.default({
                                     method: 'GET',
                                     url: url,
@@ -209,7 +206,6 @@ exports.$classUrlPath = {
                                     case 0:
                                         url = "https://" + path_json_1.default.host + path_json_1.default.lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq
                                             .substitute(path);
-                                        console.log(url);
                                         return [4 /*yield*/, axios_1.default({
                                                 method: 'GET',
                                                 url: url,
@@ -234,7 +230,6 @@ exports.$classUrlPath = {
                                         case 0:
                                             url = "https://" + path_json_1.default.host + path_json_1.default.lecture.$classUrlPath.lesson.lecture.attend.list._$lessonSeq.$subLessonSeq
                                                 .substitute(path);
-                                            console.log(url);
                                             return [4 /*yield*/, axios_1.default({
                                                     method: 'GET',
                                                     url: url,
