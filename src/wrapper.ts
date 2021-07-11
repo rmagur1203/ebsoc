@@ -61,11 +61,33 @@ export async function isMemberOfCourse(token: string, classUrlPath: string) {
     }
 }
 
+export class ContentsDTO {
+    data: any;
+    constructor(json: any){
+        this.data = json;
+    }
+    ContentsMvp(){
+        return new ContentsMvpDTO(this.data.lectureContentsMvpDto);
+    }
+}
+export class ContentsMvpDTO {
+    data: any;
+    constructor(json: any){
+        this.data = json;
+    }
+    MvpFile(){
+        return this.data.mvpFileDto;
+    }
+}
+
 export class SimplePlayer {
     token: string;
     classUrlPath: string;
     lessonSeq: number;
+
     lectureInfo: any;
+    lectureDetailInfo: any;
+    
     private contentsSeq: any;
     private contentsTypeCode: any;
     private lectureSeq: any;
@@ -97,6 +119,18 @@ export class SimplePlayer {
                 lessonSeq: this.lessonSeq,
                 subLessonSeq: this.subLessonSeq
             });
+            this.lectureInfo = res.data;
+            return res;
+        } catch (err) {
+            return { err: err };
+        }
+    }
+    async lectureDetailData() {
+        try {
+            let res = await Common.lecture.detail.lesson.$subLessonSeq(this.token, {
+                subLessonSeq: this.subLessonSeq
+            });
+            this.lectureDetailInfo = res.data;
             return res;
         } catch (err) {
             return { err: err };
@@ -104,7 +138,8 @@ export class SimplePlayer {
     }
     async create() {
         try {
-            this.lectureInfo = await this.lectureData();
+            if (!this.lectureInfo)
+                await this.lectureData();
             this.contentsSeq = this.lectureInfo.cntnsSqno;
             this.contentsTypeCode = this.lectureInfo.cntnsTyCd;
             this.lectureSeq = this.lectureInfo.lctreSqno;
@@ -121,6 +156,15 @@ export class SimplePlayer {
                 lessonSeq: this.lessonSeq
             });
             return res;
+        } catch (err) {
+            return { err: err };
+        }
+    }
+    async Contents() {
+        try {
+            if (!this.lectureDetailInfo)
+                await this.lectureData();
+            return new ContentsDTO(this.lectureDetailInfo.lectureContentsDto);
         } catch (err) {
             return { err: err };
         }

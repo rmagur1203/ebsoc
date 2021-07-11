@@ -48,6 +48,13 @@ export declare let $classUrlPath: {
                         classUrlPath: string;
                         lessonSeq: number;
                     }) => Promise<any>;
+                    _$lessonSeq: {
+                        $subLessonSeq: (token: string, path: {
+                            classUrlPath: string;
+                            lessonSeq: number;
+                            subLessonSeq: number;
+                        }) => Promise<any>;
+                    };
                 };
             };
         };

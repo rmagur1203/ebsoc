@@ -45,23 +45,37 @@ export declare function fetchCourse(token: string, classUrlPath: string, query: 
     searchWord?: string;
 }): Promise<any>;
 export declare function isMemberOfCourse(token: string, classUrlPath: string): Promise<any>;
+export declare class ContentsDTO {
+    data: any;
+    constructor(json: any);
+    ContentsMvp(): ContentsMvpDTO;
+}
+export declare class ContentsMvpDTO {
+    data: any;
+    constructor(json: any);
+    MvpFile(): any;
+}
 export declare class SimplePlayer {
     token: string;
     classUrlPath: string;
     lessonSeq: number;
     lectureInfo: any;
+    lectureDetailInfo: any;
     private contentsSeq;
     private contentsTypeCode;
     private lectureSeq;
     private lessonAttendanceSeq;
     private officeEduCode;
     private schoolCode;
-    constructor(token: string, classUrlPath: string, lessonSeq: number);
+    private subLessonSeq;
+    constructor(token: string, classUrlPath: string, lessonSeq: number, subLessonSeq: number);
+    courseData(): Promise<any>;
     lectureData(): Promise<any>;
-    lectureDetail(): Promise<{
-        err: any;
-    } | undefined>;
+    lectureDetailData(): Promise<any>;
     create(): Promise<any>;
+    Contents(): Promise<ContentsDTO | {
+        err: any;
+    }>;
 }
 export declare function notificationCount(token: string, openYn: boolean): Promise<{
     data: any;

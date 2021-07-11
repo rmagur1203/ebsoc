@@ -207,7 +207,7 @@ exports.$classUrlPath = {
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
-                                        url = "https://" + path_json_1.default.host + path_json_1.default.lecture.$classUrlPath.lesson.lecture.attend.list
+                                        url = "https://" + path_json_1.default.host + path_json_1.default.lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq
                                             .substitute(path);
                                         console.log(url);
                                         return [4 /*yield*/, axios_1.default({
@@ -224,6 +224,32 @@ exports.$classUrlPath = {
                                 }
                             });
                         });
+                    },
+                    _$lessonSeq: {
+                        $subLessonSeq: function (token, path) {
+                            return __awaiter(this, void 0, void 0, function () {
+                                var url, req;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            url = "https://" + path_json_1.default.host + path_json_1.default.lecture.$classUrlPath.lesson.lecture.attend.list._$lessonSeq.$subLessonSeq
+                                                .substitute(path);
+                                            console.log(url);
+                                            return [4 /*yield*/, axios_1.default({
+                                                    method: 'GET',
+                                                    url: url,
+                                                    headers: {
+                                                        "X-AUTH-TOKEN": token,
+                                                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                                                    }
+                                                })];
+                                        case 1:
+                                            req = _a.sent();
+                                            return [2 /*return*/, req.data];
+                                    }
+                                });
+                            });
+                        }
                     }
                 }
             }

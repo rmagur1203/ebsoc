@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.scheduleList = exports.notificationCount = exports.SimplePlayer = exports.isMemberOfCourse = exports.fetchCourse = exports.COURSE_ORDER_BY = exports.COURSE_STATUS = exports.fetchNotice = exports.fetchClassList = exports.TAB_TYPE = exports.SEARCH_TYPE = exports.fetchUserData = void 0;
+exports.scheduleList = exports.notificationCount = exports.SimplePlayer = exports.ContentsMvpDTO = exports.ContentsDTO = exports.isMemberOfCourse = exports.fetchCourse = exports.COURSE_ORDER_BY = exports.COURSE_STATUS = exports.fetchNotice = exports.fetchClassList = exports.TAB_TYPE = exports.SEARCH_TYPE = exports.fetchUserData = void 0;
 var _1 = require(".");
 function fetchUserData(token) {
     return __awaiter(this, void 0, void 0, function () {
@@ -156,13 +156,34 @@ function isMemberOfCourse(token, classUrlPath) {
     });
 }
 exports.isMemberOfCourse = isMemberOfCourse;
+var ContentsDTO = /** @class */ (function () {
+    function ContentsDTO(json) {
+        this.data = json;
+    }
+    ContentsDTO.prototype.ContentsMvp = function () {
+        return new ContentsMvpDTO(this.data.lectureContentsMvpDto);
+    };
+    return ContentsDTO;
+}());
+exports.ContentsDTO = ContentsDTO;
+var ContentsMvpDTO = /** @class */ (function () {
+    function ContentsMvpDTO(json) {
+        this.data = json;
+    }
+    ContentsMvpDTO.prototype.MvpFile = function () {
+        return this.data.mvpFileDto;
+    };
+    return ContentsMvpDTO;
+}());
+exports.ContentsMvpDTO = ContentsMvpDTO;
 var SimplePlayer = /** @class */ (function () {
-    function SimplePlayer(token, classUrlPath, lessonSeq) {
+    function SimplePlayer(token, classUrlPath, lessonSeq, subLessonSeq) {
         this.token = token;
         this.classUrlPath = classUrlPath;
         this.lessonSeq = lessonSeq;
+        this.subLessonSeq = subLessonSeq;
     }
-    SimplePlayer.prototype.lectureData = function () {
+    SimplePlayer.prototype.courseData = function () {
         return __awaiter(this, void 0, void 0, function () {
             var res, err_6;
             return __generator(this, function (_a) {
@@ -184,29 +205,65 @@ var SimplePlayer = /** @class */ (function () {
             });
         });
     };
-    SimplePlayer.prototype.lectureDetail = function () {
+    SimplePlayer.prototype.lectureData = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var res, err_7;
             return __generator(this, function (_a) {
-                try {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, _1.Lecture.$classUrlPath.lesson.lecture.attend.list._$lessonSeq.$subLessonSeq(this.token, {
+                                classUrlPath: this.classUrlPath,
+                                lessonSeq: this.lessonSeq,
+                                subLessonSeq: this.subLessonSeq
+                            })];
+                    case 1:
+                        res = _a.sent();
+                        this.lectureInfo = res.data;
+                        return [2 /*return*/, res];
+                    case 2:
+                        err_7 = _a.sent();
+                        return [2 /*return*/, { err: err_7 }];
+                    case 3: return [2 /*return*/];
                 }
-                catch (err) {
-                    return [2 /*return*/, { err: err }];
+            });
+        });
+    };
+    SimplePlayer.prototype.lectureDetailData = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var res, err_8;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, _1.Common.lecture.detail.lesson.$subLessonSeq(this.token, {
+                                subLessonSeq: this.subLessonSeq
+                            })];
+                    case 1:
+                        res = _a.sent();
+                        this.lectureDetailInfo = res.data;
+                        return [2 /*return*/, res];
+                    case 2:
+                        err_8 = _a.sent();
+                        return [2 /*return*/, { err: err_8 }];
+                    case 3: return [2 /*return*/];
                 }
-                return [2 /*return*/];
             });
         });
     };
     SimplePlayer.prototype.create = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, res, err_7;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var res, err_9;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
-                        _a = this;
+                        _a.trys.push([0, 4, , 5]);
+                        if (!!this.lectureInfo) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.lectureData()];
                     case 1:
-                        _a.lectureInfo = _b.sent();
+                        _a.sent();
+                        _a.label = 2;
+                    case 2:
                         this.contentsSeq = this.lectureInfo.cntnsSqno;
                         this.contentsTypeCode = this.lectureInfo.cntnsTyCd;
                         this.lectureSeq = this.lectureInfo.lctreSqno;
@@ -222,12 +279,33 @@ var SimplePlayer = /** @class */ (function () {
                                 schoolCode: this.schoolCode,
                                 lessonSeq: this.lessonSeq
                             })];
-                    case 2:
-                        res = _b.sent();
-                        return [2 /*return*/, res];
                     case 3:
-                        err_7 = _b.sent();
-                        return [2 /*return*/, { err: err_7 }];
+                        res = _a.sent();
+                        return [2 /*return*/, res];
+                    case 4:
+                        err_9 = _a.sent();
+                        return [2 /*return*/, { err: err_9 }];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    SimplePlayer.prototype.Contents = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var err_10;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        if (!!this.lectureDetailInfo) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.lectureData()];
+                    case 1:
+                        _a.sent();
+                        _a.label = 2;
+                    case 2: return [2 /*return*/, new ContentsDTO(this.lectureDetailInfo.lectureContentsDto)];
+                    case 3:
+                        err_10 = _a.sent();
+                        return [2 /*return*/, { err: err_10 }];
                     case 4: return [2 /*return*/];
                 }
             });
@@ -238,7 +316,7 @@ var SimplePlayer = /** @class */ (function () {
 exports.SimplePlayer = SimplePlayer;
 function notificationCount(token, openYn) {
     return __awaiter(this, void 0, void 0, function () {
-        var res, err_8;
+        var res, err_11;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -248,8 +326,8 @@ function notificationCount(token, openYn) {
                     res = _a.sent();
                     return [2 /*return*/, { data: res }];
                 case 2:
-                    err_8 = _a.sent();
-                    return [2 /*return*/, { err: err_8 }];
+                    err_11 = _a.sent();
+                    return [2 /*return*/, { err: err_11 }];
                 case 3: return [2 /*return*/];
             }
         });
