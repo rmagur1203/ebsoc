@@ -219,6 +219,7 @@ var SimplePlayer = /** @class */ (function () {
                             })];
                     case 1:
                         res = _a.sent();
+                        console.log(res);
                         this.lectureInfo = res.data;
                         return [2 /*return*/, res];
                     case 2:
@@ -264,6 +265,7 @@ var SimplePlayer = /** @class */ (function () {
                         _a.sent();
                         _a.label = 2;
                     case 2:
+                        console.log(this);
                         this.contentsSeq = this.lectureInfo.cntnsSqno;
                         this.contentsTypeCode = this.lectureInfo.cntnsTyCd;
                         this.lectureSeq = this.lectureInfo.lctreSqno;

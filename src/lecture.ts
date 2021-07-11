@@ -35,7 +35,7 @@ export let student = {
     },
     learningProgress: async function (token: string, lectureLearningSeq: number, data: { encriptedProgressRate: string }) {
         ///common_domain/lecture/api/v1/sunrinkorean1/lesson/lecture/attend/list/1903 => lectureLearningSeq
-        console.log(lectureLearningSeq)
+        //console.log(lectureLearningSeq)
         let url: string = "https://" + Path.host + Path.lecture.student.learningProgress
             .replace('${lectureLearningSeq}', lectureLearningSeq.toString());
         let req = await axios({
@@ -97,7 +97,7 @@ export let $classUrlPath = {
         info: async function (token: string, path: { classUrlPath: string, lessonSeq: number }) {
             let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.info
                 .substitute(path);
-            console.log(url)
+            //console.log(url)
             let req = await axios({
                 method: 'GET',
                 url: url,
@@ -114,7 +114,7 @@ export let $classUrlPath = {
                     $lessonSeq: async function (token: string, path: { classUrlPath: string, lessonSeq: number }) {
                         let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq
                             .substitute(path);
-                        console.log(url);
+                        //console.log(url);
                         let req = await axios({
                             method: 'GET',
                             url: url,
@@ -129,7 +129,7 @@ export let $classUrlPath = {
                         $subLessonSeq: async function (token: string, path: { classUrlPath: string, lessonSeq: number, subLessonSeq: number }) {
                             let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.lecture.attend.list._$lessonSeq.$subLessonSeq
                                 .substitute(path);
-                            console.log(url);
+                            //console.log(url);
                             let req = await axios({
                                 method: 'GET',
                                 url: url,
