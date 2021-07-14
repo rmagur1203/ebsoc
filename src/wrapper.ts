@@ -95,6 +95,7 @@ export class SimplePlayer {
     private officeEduCode: any;
     private schoolCode: any;
     private subLessonSeq: number;
+    private lctreLrnSqno: string;
     constructor(token: string, classUrlPath: string, lessonSeq: number, subLessonSeq: number) {
         this.token = token;
         this.classUrlPath = classUrlPath;
@@ -146,6 +147,7 @@ export class SimplePlayer {
             this.lessonAttendanceSeq = this.lectureInfo.lsnAtltSqno;
             this.officeEduCode = this.lectureInfo.ofecCd;
             this.schoolCode = this.lectureInfo.schlCd;
+            this.lctreLrnSqno = this.lectureInfo.lctreLrnSqno;
             let res = await Lecture.lesson.lecture.attend.create(this.token, {
                 contentsSeq: this.contentsSeq,
                 contentsTypeCode: this.contentsTypeCode,
@@ -168,6 +170,10 @@ export class SimplePlayer {
         } catch (err) {
             return { err: err };
         }
+    }
+
+    async encrypt(memberSeq: number, percent: number){
+
     }
 }
 
