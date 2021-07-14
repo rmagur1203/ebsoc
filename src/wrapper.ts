@@ -95,7 +95,7 @@ export class SimplePlayer {
     private officeEduCode: any;
     private schoolCode: any;
     private subLessonSeq: number;
-    private lctreLrnSqno: string;
+    private lctreLrnSqno: string | undefined;
     constructor(token: string, classUrlPath: string, lessonSeq: number, subLessonSeq: number) {
         this.token = token;
         this.classUrlPath = classUrlPath;
@@ -173,7 +173,7 @@ export class SimplePlayer {
     }
 
     async encrypt(memberSeq: number, percent: number){
-
+        console.log(this.lctreLrnSqno);
     }
 }
 

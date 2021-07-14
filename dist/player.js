@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mvpCurrentPercent = exports.mvpPlayTime = exports.mvpFileUrlPath = exports.mvpDto = exports.lessonList = exports.makeRate = exports.callApi = exports.encrypt = exports.iv = exports.key = exports.progressIntervalInSeconds = void 0;
-var get_video_duration_1 = require("get-video-duration");
+var get_video_duration_electron_1 = require("get-video-duration-electron");
 var crypto_js_1 = __importDefault(require("crypto-js"));
 var lecture_1 = require("./lecture");
 var common_1 = require("./common");
@@ -139,7 +139,7 @@ function mvpPlayTime(token, path) {
                 case 1:
                     Dto = _a.sent();
                     if (!!Dto.playTime) return [3 /*break*/, 3];
-                    return [4 /*yield*/, get_video_duration_1.getVideoDurationInSeconds(Dto.mvpFileUrlPath)];
+                    return [4 /*yield*/, get_video_duration_electron_1.getVideoDurationInSeconds(Dto.mvpFileUrlPath)];
                 case 2: return [2 /*return*/, _a.sent()];
                 case 3: return [2 /*return*/, Dto.playTime];
             }

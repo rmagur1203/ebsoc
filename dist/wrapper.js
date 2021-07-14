@@ -270,6 +270,7 @@ var SimplePlayer = /** @class */ (function () {
                         this.lessonAttendanceSeq = this.lectureInfo.lsnAtltSqno;
                         this.officeEduCode = this.lectureInfo.ofecCd;
                         this.schoolCode = this.lectureInfo.schlCd;
+                        this.lctreLrnSqno = this.lectureInfo.lctreLrnSqno;
                         return [4 /*yield*/, _1.Lecture.lesson.lecture.attend.create(this.token, {
                                 contentsSeq: this.contentsSeq,
                                 contentsTypeCode: this.contentsTypeCode,
@@ -308,6 +309,14 @@ var SimplePlayer = /** @class */ (function () {
                         return [2 /*return*/, { err: err_10 }];
                     case 4: return [2 /*return*/];
                 }
+            });
+        });
+    };
+    SimplePlayer.prototype.encrypt = function (memberSeq, percent) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                console.log(this.lctreLrnSqno);
+                return [2 /*return*/];
             });
         });
     };

@@ -68,6 +68,7 @@ export declare class SimplePlayer {
     private officeEduCode;
     private schoolCode;
     private subLessonSeq;
+    private lctreLrnSqno;
     constructor(token: string, classUrlPath: string, lessonSeq: number, subLessonSeq: number);
     courseData(): Promise<any>;
     lectureData(): Promise<any>;
@@ -76,6 +77,7 @@ export declare class SimplePlayer {
     Contents(): Promise<ContentsDTO | {
         err: any;
     }>;
+    encrypt(memberSeq: number, percent: number): Promise<void>;
 }
 export declare function notificationCount(token: string, openYn: boolean): Promise<{
     data: any;

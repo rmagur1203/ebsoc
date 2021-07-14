@@ -1,4 +1,4 @@
-import { getVideoDurationInSeconds as videoDuration } from 'get-video-duration';
+import { getVideoDurationInSeconds as videoDuration } from 'get-video-duration-electron';
 
 import CryptoJS from 'crypto-js';
 
