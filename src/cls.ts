@@ -96,7 +96,7 @@ export let lctClass = {
         });
         return req.data;
     },
-    classSqno: async function (token: string, classSqno: number, data: { schoolCode: string }){
+    classSqno: async function (token: string, classSqno: number, data: { schoolCode: string }) {
         let url: string = "https://" + path.host + path.cls.lctClass.class.replace('${classSqno}', classSqno.toString());
         let req = await axios({
             method: 'POST',
@@ -112,8 +112,35 @@ export let lctClass = {
 }
 
 export let classMenu = {
-    menuList: async function (token: string, data: {classSqno:number}) {
+    menuList: async function (token: string, data: { classSqno: number }) {
+        let url: string = "https://" + path.host + path.cls.classMenu.menuList;
+        let req = await axios({
+            method: 'POST',
+            url: url,
+            headers: {
+                "X-AUTH-TOKEN": token,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+            },
+            data: data
+        });
+        return req.data;
+    }
+}
 
+export let classMember = {
+    $classUrlPath: {
+        isMember: async function (token: string, Path: { classUrlPath: string }) {
+            let url: string = "https://" + path.host + path.cls.classMember.$classUrlPath.isMember;
+            let req = await axios({
+                method: 'GET',
+                url: url,
+                headers: {
+                    "X-AUTH-TOKEN": token,
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                }
+            });
+            return req.data;
+        }
     }
 }
 

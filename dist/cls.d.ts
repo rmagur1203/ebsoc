@@ -39,7 +39,14 @@ export declare let lctClass: {
 export declare let classMenu: {
     menuList: (token: string, data: {
         classSqno: number;
-    }) => Promise<void>;
+    }) => Promise<any>;
+};
+export declare let classMember: {
+    $classUrlPath: {
+        isMember: (token: string, Path: {
+            classUrlPath: string;
+        }) => Promise<any>;
+    };
 };
 export declare function communityBoardNoticeMainList(token: string, data: {
     classUrlPath: string;

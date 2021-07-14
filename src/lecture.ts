@@ -35,7 +35,7 @@ export let student = {
     },
     learningProgress: async function (token: string, lectureLearningSeq: number, data: { encriptedProgressRate: string }) {
         ///common_domain/lecture/api/v1/sunrinkorean1/lesson/lecture/attend/list/1903 => lectureLearningSeq
-        console.log(lectureLearningSeq)
+        //console.log(lectureLearningSeq)
         let url: string = "https://" + Path.host + Path.lecture.student.learningProgress
             .replace('${lectureLearningSeq}', lectureLearningSeq.toString());
         let req = await axios({
@@ -81,7 +81,7 @@ export let lesson = {
 
 export let $classUrlPath = {
     lesson: {
-        list: async function (token: string, path: { classUrlPath: string }) {
+        list: async function (token: string, path: { classUrlPath: string }, query: { atltStsCd: any, orderBy: number, lsnNm?: string }) {
             let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.list
                 .substitute(path);
             let req = await axios({
@@ -97,7 +97,7 @@ export let $classUrlPath = {
         info: async function (token: string, path: { classUrlPath: string, lessonSeq: number }) {
             let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.info
                 .substitute(path);
-            console.log(url)
+            //console.log(url)
             let req = await axios({
                 method: 'GET',
                 url: url,
@@ -112,9 +112,9 @@ export let $classUrlPath = {
             attend: {
                 list: {
                     $lessonSeq: async function (token: string, path: { classUrlPath: string, lessonSeq: number }) {
-                        let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.lecture.attend.list
+                        let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.lecture.attend.list.$lessonSeq
                             .substitute(path);
-                        console.log(url);
+                        //console.log(url);
                         let req = await axios({
                             method: 'GET',
                             url: url,
@@ -124,6 +124,22 @@ export let $classUrlPath = {
                             }
                         });
                         return req.data;
+                    },
+                    _$lessonSeq: {
+                        $subLessonSeq: async function (token: string, path: { classUrlPath: string, lessonSeq: number, subLessonSeq: number }) {
+                            let url: string = "https://" + Path.host + Path.lecture.$classUrlPath.lesson.lecture.attend.list._$lessonSeq.$subLessonSeq
+                                .substitute(path);
+                            //console.log(url);
+                            let req = await axios({
+                                method: 'GET',
+                                url: url,
+                                headers: {
+                                    "X-AUTH-TOKEN": token,
+                                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36"
+                                }
+                            });
+                            return req.data;
+                        }
                     }
                 }
             }
