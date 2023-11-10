@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/kdhkr/ebsoc#readme",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^1.6.0",
     "axios-debug-log": "^0.8.2",
     "crypto-js": "^4.0.0",
     "get-video-duration-electron": "^3.1.0",
